@@ -1,6 +1,14 @@
 # hadoop
 * 安裝
-  * 下載jdk1.8，並且移動到home目錄
+  * 下載jdk1.8
+  * 解壓縮
+  ```js
+  tar zxvf jdk-8u251-linux-x64.tar.gz
+  ```
+  * 把資料夾移動到home目錄
+  ```js
+  mv jdk1.8.0_251 ~/
+  ```
   * 設定 `~/.bashrc` 檔
     ```js
     #找到這幾行
@@ -20,3 +28,32 @@
     export JAVA_HOME=/home/spark/jdk1.8.0_251   #加上這兩行
     export PATH=$JAVA_HOME/bin:$PATH            #加上這兩行
     ```
+  * 執行~/.bashrc檔 `source ~/.bashrc`
+  * 下載 openjdk-8-jre-headless
+  ```js
+  sudo apt install openjdk-8-jre-headless
+  ```
+  * 測試 
+  ```js 
+  java -version
+  ```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
