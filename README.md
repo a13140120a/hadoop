@@ -1,5 +1,5 @@
 # hadoop
-* 安裝
+* 安裝java
   * 下載jdk1.8
   * 解壓縮
   ```js
@@ -36,7 +36,51 @@
   * 測試 
   ```js 
   java -version
+  ```  
+  
+* 安裝hadoop
+  * 解壓縮
+  ```js
+  tar zxvf hadoop-2.10.0.tar.gz
   ```
+  * 移動到 home目錄
+  ```js
+  mv hadoop-2.10.0 ~/
+  ```
+  * 進到 `hadoop-2.10.0/etc/hadoop/` 編輯 `core-site.xml`
+  ```js
+  cd ~
+  cd hadoop-2.10.0/etc/hadoop/
+  vim core-site.xml
+  ```
+  * 找到下面:
+  ```js
+  <!-- Put site-specific property overrides in this file. -->
+
+  <configuration>
+  </configuration>           
+  ```
+  * 覆蓋 (<value>hdfs://{master的主機名稱(@右邊)}</value>)
+  ```js
+  <configuration>
+    <property>
+      <name>fs.defaultFS</name>
+      <value>hdfs://master</value>
+    </property>
+  </configuration>
+  ```
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
