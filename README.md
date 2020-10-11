@@ -60,7 +60,9 @@
   <configuration>
   </configuration>           
   ```
-  * 覆蓋
+  * 覆蓋  
+      1 <value>hdfs://主機名稱(@右邊):9000</value>  (設定HDFS登入位置，port號為9000)  
+      2 <value>file:/usr/local/hadoop/tmp</value>  (設定保存臨時文件位置，預設是/tmp/hadoop-hadoop)  
   ```js
   <configuration>
        <property>
@@ -74,8 +76,7 @@
        </property>
   </configuration>
   ```
-  * <value>hdfs://主機名稱(@右邊):9000</value>  (設定HDFS登入位置，port號為9000)
-  * <value>file:/usr/local/hadoop/tmp</value>  (設定保存臨時文件位置，預設是/tmp/hadoop-hadoop)
+
   * 進到 `hadoop-2.10.0/etc/hadoop/` 編輯 `hdfs-site.xml`
   ```js
   cd ~/hadoop-2.10.0/etc/hadoop/
