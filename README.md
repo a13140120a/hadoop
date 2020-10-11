@@ -60,19 +60,49 @@
   <configuration>
   </configuration>           
   ```
-  * 覆蓋 (<value>hdfs://{master的主機名稱(@右邊)}</value>)
+  * 覆蓋
   ```js
   <configuration>
-    <property>
-      <name>fs.defaultFS</name>
-      <value>hdfs://master</value>
-    </property>
+       <property>
+            <name>hadoop.tmp.dir</name>
+            <value>file:/usr/local/hadoop/tmp</value>
+            <description>Abase for other temporary directories.</description>
+       </property>
+       <property>
+            <name>fs.defaultFS</name>
+            <value>hdfs://{主機}:9000</value>
+       </property>
   </configuration>
   ```
+  * <value>hdfs://主機名稱(@右邊):9000</value>  (設定HDFS登入位置，port號為9000)
+  * <value>file:/usr/local/hadoop/tmp</value>  (設定保存臨時文件位置，預設是/tmp/hadoop-hadoop)
+  * 進到 `hadoop-2.10.0/etc/hadoop/` 編輯 `hdfs-site.xml`
+  ```js
+  cd ~/hadoop-2.10.0/etc/hadoop/
+  vim hdfs-site.xml
+  ```
+  * 一樣修改
+  ```js
+  <configuration>
+        <property>
+                <name>dfs.namenode.secondary.http-address</name>
+                <value>master:50090</value>
+        </property>
+        <property>
+                <name>dfs.namenode.name.dir</name>
+  <value>file:/home/master/hadoop/tmp/dfs/name</value>
+        </property>
+        <property>
+                <name>dfs.datanode.data.dir</name>
+  <value>file:/home/master/hadoop/tmp/dfs/data</value>
+        </property>
+        <property>
+                <name>dfs.replication</name>
+                <value>3</value>
+        </property>
 
-
-
-
+  </configuration>
+```
 
 
 
