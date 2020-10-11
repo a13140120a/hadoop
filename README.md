@@ -47,7 +47,7 @@
   ```js
   mv hadoop-2.10.0 ~/
   ```
-  * 進到 `hadoop-2.10.0/etc/hadoop/` 編輯 `core-site.xml`
+  * 修改 `core-site.xml` 檔
   ```js
   cd ~
   cd hadoop-2.10.0/etc/hadoop/
@@ -61,52 +61,71 @@
   </configuration>           
   ```
   * 覆蓋  
-      1 <value>hdfs://主機名稱(@右邊):9000</value>  (設定HDFS登入位置，port號為9000)  
-      2 <value>file:/usr/local/hadoop/tmp</value>  (設定保存臨時文件位置，預設是/tmp/hadoop-hadoop)  
+      <name>fs.defaultFS</name>  (設定HDFS登入位置，port號為9000)  
+      <name>hadoop.tmp.dir</name>  (設定保存臨時文件位置，預設是/tmp/hadoop-hadoop)  
+      ex:  
+     ```js
+     <configuration>
+          <property>
+               <name>hadoop.tmp.dir</name>
+               <value>file:/usr/local/hadoop/tmp</value>
+               <description>Abase for other temporary directories.</description>
+          </property>
+          <property>
+               <name>fs.defaultFS</name>
+               <value>hdfs://{主機}:9000</value>
+          </property>
+     </configuration>
+     ```
+
+   * 修改 `hdfs-site.xml` 檔
+     ```js
+     cd ~/hadoop-2.10.0/etc/hadoop/
+     vim hdfs-site.xml
+     ```
+  * 一樣修改   
+    <name>dfs.namenode.secondary.http-address</name>  主要是設定Name Node欲保存的Metadata之儲存目錄    
+    <name>dfs.datanode.data.dir</name> Data Node欲保存的資料之儲存目錄  
+    <name>dfs.replication</name>  儲存資料之副本數  
+    ex:  
+     ```js
+     <configuration>
+           <property>
+                   <name>dfs.namenode.secondary.http-address</name>
+                   <value>master:50090</value>
+           </property>
+           <property>
+                   <name>dfs.namenode.name.dir</name>
+     <value>file:/home/master/hadoop/tmp/dfs/name</value>
+           </property>
+           <property>
+                   <name>dfs.datanode.data.dir</name>
+     <value>file:/home/master/hadoop/tmp/dfs/data</value>
+           </property>
+           <property>
+                   <name>dfs.replication</name>
+                   <value>3</value>
+           </property>
+     </configuration>
+     ```
+  * 修改 `yarn-site.xml` 檔(可有可無)
   ```js
   <configuration>
-       <property>
-            <name>hadoop.tmp.dir</name>
-            <value>file:/usr/local/hadoop/tmp</value>
-            <description>Abase for other temporary directories.</description>
-       </property>
-       <property>
-            <name>fs.defaultFS</name>
-            <value>hdfs://{主機}:9000</value>
-       </property>
+    <property>
+        <name>yarn.nodemanager.aux-services</name>
+        <value>mapreduce_shuffle</value>
+    </property>
   </configuration>
   ```
-
-  * 進到 `hadoop-2.10.0/etc/hadoop/` 編輯 `hdfs-site.xml`
-  ```js
-  cd ~/hadoop-2.10.0/etc/hadoop/
-  vim hdfs-site.xml
-  ```
-  * 一樣修改
+  * 修改 `yarn-site.xml`
   ```js
   <configuration>
-        <property>
-                <name>dfs.namenode.secondary.http-address</name>
-                <value>master:50090</value>
-        </property>
-        <property>
-                <name>dfs.namenode.name.dir</name>
-  <value>file:/home/master/hadoop/tmp/dfs/name</value>
-        </property>
-        <property>
-                <name>dfs.datanode.data.dir</name>
-  <value>file:/home/master/hadoop/tmp/dfs/data</value>
-        </property>
-        <property>
-                <name>dfs.replication</name>
-                <value>3</value>
-        </property>
-
+    <property>
+      <name>mapreduce.framework.name</name>
+      <value>yarn</value>
+    </property>
   </configuration>
   ```
-
-
-
 
 
 
