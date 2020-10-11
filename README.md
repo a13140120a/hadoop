@@ -126,7 +126,15 @@
     </property>
   </configuration>
   ```
-
+  * 修改`slave`  
+    加上所有slave的名稱(不包含master)
+  * 並於/etc/hosts 修改各機器ip及主機名稱
+  ```js
+  127.0.0.1       localhost
+  192.xxx.x.xxx   slave1
+  192.xxx.x.xxx   slave2
+  ```
+  
 
 
 
