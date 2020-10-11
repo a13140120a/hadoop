@@ -126,7 +126,7 @@
     </property>
   </configuration>
   ```
-  * 修改`slave`  
+  * 修改`slave`  #(註:修改本機hostname:`vi /etc/hostname`)
     加上所有slave的名稱(不包含master)
   * 並於/etc/hosts 修改各機器ip及主機名稱
   ```js
