@@ -178,7 +178,7 @@
     ```
   * 修改`~/.bashrc`檔，底下添加:(記得source)
     ```js
-    export HADOOP_HOME=/home/spark/hadoop-2.10.0
+    export HADOOP_HOME=/home/spark/hadoop-2.10.0   #注意路徑
     export PATH=$HADOOP_HOME/bin:$PATH
 
     export HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop
