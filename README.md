@@ -32,7 +32,7 @@
    cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys   
    ```    
   * scp authorized_keys到各個slave內
-  
+  * 如果沒有.ssh資料夾，就先`ssh localhost` 再登出就會出現了
   
   
 * 安裝java
