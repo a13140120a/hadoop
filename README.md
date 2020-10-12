@@ -183,8 +183,16 @@
 
     export HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop
     ```
-  
+  * 建立需要的資料夾(hadoop/tmp 還有hdfs/namenode、datanode)
+  ```js
+  cd ~
+  mkdir tmp
+  mkdir hdfs
 
+  cd hdfs
+  mkdir namenode
+  mkdir datanode
+  ```
 
 
 
