@@ -128,11 +128,11 @@
            </property>
            <property>
                    <name>dfs.namenode.name.dir</name>
-     <value>file:/home/master/hadoop/tmp/dfs/name</value>
+                   <value>file:/home/master/hadoop/tmp/dfs/name</value>
            </property>
            <property>
                    <name>dfs.datanode.data.dir</name>
-     <value>file:/home/master/hadoop/tmp/dfs/data</value>
+                   <value>file:/home/master/hadoop/tmp/dfs/data</value>
            </property>
            <property>
                    <name>dfs.replication</name>
