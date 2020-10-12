@@ -100,12 +100,12 @@
      <configuration>
           <property>
                <name>hadoop.tmp.dir</name>
-               <value>file:/usr/local/hadoop/tmp</value>
+               <value>/home/hadoop/tmp</value>
                <description>Abase for other temporary directories.</description>
           </property>
           <property>
                <name>fs.defaultFS</name>
-               <value>hdfs://{主機}:9000</value>
+               <value>hdfs://{主機}:9000</value>  #注意路徑
           </property>
      </configuration>
      ```
@@ -123,12 +123,12 @@
      ```js
      <configuration>
            <property>
-                   <name>dfs.namenode.secondary.http-address</name>
+                   <name>dfs.namenode.secondary.http-address</name>  #可有可無
                    <value>master:50090</value>
            </property>
            <property>
                    <name>dfs.namenode.name.dir</name>
-                   <value>/home/hadoop/hdfs/namenode</value>
+                   <value>/home/hadoop/hdfs/namenode</value>   #注意路徑
            </property>
            <property>
                    <name>dfs.datanode.data.dir</name>
@@ -149,7 +149,7 @@
     </property>
   </configuration>
   ```
-  * 修改 `yarn-site.xml`
+  * 修改 `mapred-site.xml.template`檔(可有可無)
   ```js
   <configuration>
     <property>
@@ -158,7 +158,7 @@
     </property>
   </configuration>
   ```
-  * 修改`slave` 
+  * 修改`slave` 檔:
     加上所有slave的名稱(不包含master)  
   * 並於/etc/hosts 修改各機器ip及主機名稱  
   ```js
@@ -168,14 +168,22 @@
   ```
   * 修改 `hadoop-env.sh` 檔，在底下添加:
     ```js
-    export JAVA_HOME=/home/spark/jdk1.8.0_251
+    export JAVA_HOME=/home/spark/jdk1.8.0_251  #注意路徑
     export PATH=$JAVA_HOME/bin:$PATH
 
     export HADOOP_HOME=/home/spark/hadoop-2.10.0
     export PATH=$HADOOP_HOME/bin:$PATH
 
+    export HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop  
+    ```
+  * 修改`~/.bashrc`檔，底下添加:(記得source)
+    ```js
+    export HADOOP_HOME=/home/spark/hadoop-2.10.0
+    export PATH=$HADOOP_HOME/bin:$PATH
+
     export HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop
-     ```
+    ```
+  
 
 
 
