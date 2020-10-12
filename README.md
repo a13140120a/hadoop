@@ -65,10 +65,6 @@
     export PATH=$JAVA_HOME/bin:$PATH            #加上這兩行
     ```
   * 執行~/.bashrc檔 `source ~/.bashrc`
-  * 下載 openjdk-8-jre-headless
-  ```js
-  sudo apt install openjdk-8-jre-headless
-  ```
   * 測試 
   ```js 
   java -version
