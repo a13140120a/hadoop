@@ -1,4 +1,40 @@
 # hadoop
+
+* 修改本機hostname:
+  ```js
+  vi /etc/hostname
+  ```
+* 建立hadoop使用者以及群組(每台都要)  
+  * 建立群組  
+   ```js
+   sudo addgroup hadoop_group  
+   ```
+   * 建立 Hadoop 專用帳戶
+   ```js
+   sudo adduser --ingroup hadoop_group [帳號]
+   ```
+   * 將 hadoop_admin 帳戶加入 sudo 權限
+     ```js
+     sudo vi /etc/sudoers
+     ```
+     下方新增:
+     ```js
+     hadoop_admin ALL=(ALL:ALL) ALL
+     ```
+  * 切換至剛剛建立好的 hadoop 管理帳號
+    ```js
+    su hadoop_admin
+    ```
+    
+* 建立金鑰:
+   ```js
+   ssh-keygen -t rsa -P '' -f ~/.ssh/id_rsa
+   cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys   
+   ```    
+  * scp authorized_keys到各個slave內
+  
+  
+  
 * 安裝java
   * 下載jdk1.8
   * 解壓縮
@@ -25,7 +61,7 @@
     fi
     
 
-    export JAVA_HOME=/home/spark/jdk1.8.0_251   #加上這兩行
+    export JAVA_HOME=/home/{username}/jdk1.8.0_251   #加上這兩行 (注意路徑)
     export PATH=$JAVA_HOME/bin:$PATH            #加上這兩行
     ```
   * 執行~/.bashrc檔 `source ~/.bashrc`
@@ -126,9 +162,9 @@
     </property>
   </configuration>
   ```
-  * 修改`slave`  #(註:修改本機hostname:`vi /etc/hostname`)
-    加上所有slave的名稱(不包含master)
-  * 並於/etc/hosts 修改各機器ip及主機名稱
+  * 修改`slave` 
+    加上所有slave的名稱(不包含master)  
+  * 並於/etc/hosts 修改各機器ip及主機名稱  
   ```js
   127.0.0.1       localhost
   192.xxx.x.xxx   slave1
