@@ -167,7 +167,7 @@
   192.xxx.x.xxx   slave2
   ```
   * 修改 `hadoop-env.sh` 檔，在底下添加:
-  ```js
+    ```js
     export JAVA_HOME=/home/spark/jdk1.8.0_251
     export PATH=$JAVA_HOME/bin:$PATH
 
@@ -175,7 +175,7 @@
     export PATH=$HADOOP_HOME/bin:$PATH
 
     export HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop
-   ```
+     ```
 
 
 
