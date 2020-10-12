@@ -193,7 +193,11 @@
   mkdir namenode
   mkdir datanode
   ```
+* scp 整個hadoop資料夾、jave資料夾、`~/.bashrc` 檔到各個slave:
+```js
+scp -r hadoop-2.10.0 xxx@xxx.xxx.x.xxx:~
 
+```
 
 
 
