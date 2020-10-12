@@ -140,29 +140,17 @@
            </property>
      </configuration>
      ```
-  * 修改 `yarn-site.xml` 檔(可有可無)
-  ```js
-  <configuration>
-    <property>
-        <name>yarn.nodemanager.aux-services</name>
-        <value>mapreduce_shuffle</value>
-    </property>
-  </configuration>
-  ```
-  * 修改 `mapred-site.xml.template`檔(可有可無)
-  ```js
-  <configuration>
-    <property>
-      <name>mapreduce.framework.name</name>
-      <value>yarn</value>
-    </property>
-  </configuration>
-  ```
-  * 修改`slave` 檔:
-    加上所有slave的名稱(不包含master)  
-  * 並於/etc/hosts 修改各機器ip及主機名稱  
+  * 修改`slave` 檔，加上所有slave的名稱 :
+     ```js
+     master
+     slave1
+     slave2
+     ```
+     
+  * 並於/etc/hosts 修改各機器ip及主機名稱 (每台都要)
   ```js
   127.0.0.1       localhost
+  192.xxx.x.xxx   master
   192.xxx.x.xxx   slave1
   192.xxx.x.xxx   slave2
   ```
@@ -193,14 +181,39 @@
   mkdir namenode
   mkdir datanode
   ```
-* scp 整個hadoop資料夾、jave資料夾、`~/.bashrc` 檔到各個slave:
-```js
-scp -r hadoop-2.10.0 xxx@xxx.xxx.x.xxx:~
-
-```
-
-
-
+  * scp 整個hadoop資料夾、jave資料夾、`~/.bashrc` 檔到各個slave:(記得每台都要source)
+  ```js
+  scp -r hadoop-2.10.0 xxx@xxx.xxx.x.xxx:~
+  ```
+  * 格式化hadoop:
+  ```js
+  hadoop namenode -format
+  ```
+  * 啟動hadoop:
+  ```js
+  cd ~
+  cd hadoop-2.10.0/sbin
+  ./start-dfs.sh
+  ```
+* 安裝yarn:(可有可無)
+  * 修改 `yarn-site.xml` 檔
+  ```js
+  <configuration>
+    <property>
+        <name>yarn.nodemanager.aux-services</name>
+        <value>mapreduce_shuffle</value>
+    </property>
+  </configuration>
+  ```
+  * 修改 `mapred-site.xml.template`檔
+  ```js
+  <configuration>
+    <property>
+      <name>mapreduce.framework.name</name>
+      <value>yarn</value>
+    </property>
+  </configuration>
+  ```
 
 
 
