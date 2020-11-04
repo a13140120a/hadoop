@@ -19,11 +19,11 @@
      ```
      下方新增:
      ```js
-     hadoop_admin ALL=(ALL:ALL) ALL
+     [帳號] ALL=(ALL:ALL) ALL
      ```
   * 切換至剛剛建立好的 hadoop 管理帳號
     ```js
-    su hadoop_admin
+    su [帳號]
     ```
     
 * 建立金鑰:
@@ -100,7 +100,7 @@
      <configuration>
           <property>
                <name>hadoop.tmp.dir</name>
-               <value>/home/hadoop/tmp</value>
+               <value>/home/[帳號]/tmp</value>
                <description>Abase for other temporary directories.</description>
           </property>
           <property>
@@ -128,11 +128,11 @@
            </property>
            <property>
                    <name>dfs.namenode.name.dir</name>
-                   <value>/home/hadoop/hdfs/namenode</value>   #注意路徑
+                   <value>/home/[帳號]/hdfs/namenode</value>   #注意路徑
            </property>
            <property>
                    <name>dfs.datanode.data.dir</name>
-                   <value>/home/hadoop/hdfs/datanode</value>
+                   <value>/home/[帳號]/hdfs/datanode</value>
            </property>
            <property>
                    <name>dfs.replication</name>
@@ -156,17 +156,17 @@
   ```
   * 修改 `hadoop-env.sh` 檔，在底下添加:
     ```js
-    export JAVA_HOME=/home/spark/jdk1.8.0_251  #注意路徑
+    export JAVA_HOME=/home/[帳號]/jdk1.8.0_251  #注意路徑
     export PATH=$JAVA_HOME/bin:$PATH
 
-    export HADOOP_HOME=/home/spark/hadoop-2.10.0
+    export HADOOP_HOME=/home/[帳號]/hadoop-2.10.0
     export PATH=$HADOOP_HOME/bin:$PATH
 
     export HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop  
     ```
   * 修改`~/.bashrc`檔，底下添加:(記得source)
     ```js
-    export HADOOP_HOME=/home/spark/hadoop-2.10.0   #注意路徑
+    export HADOOP_HOME=/home/[帳號]/hadoop-2.10.0   #注意路徑
     export PATH=$HADOOP_HOME/bin:$PATH
 
     export HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop
