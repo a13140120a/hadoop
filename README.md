@@ -222,7 +222,7 @@ hadoop@master:~/sparkk/spark101/wordcount/data$ hadoop fs -mkdir hdfs://master/u
 mkdir: Call From master/192.168.1.69 to master:8020 failed on connection exception: java.net.ConnectException: Connection refused; For more details see:  http://wiki.apache.org/hadoop/ConnectionRefused
 ```
   解決方法:
-  core-site.xml檔的9000port改成8020port
+  * core-site.xml檔的9000port改成8020port
 
 
 
