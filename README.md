@@ -216,6 +216,7 @@
   ```
 #參考資料:[https://medium.com/@sleo1104/hadoop-3-2-0-%E5%AE%89%E8%A3%9D%E6%95%99%E5%AD%B8%E8%88%87%E4%BB%8B%E7%B4%B9-22aa183be33a](https://medium.com/@sleo1104/hadoop-3-2-0-%E5%AE%89%E8%A3%9D%E6%95%99%E5%AD%B8%E8%88%87%E4%BB%8B%E7%B4%B9-22aa183be33a)
 
+* 基本操作:[官方文件](https://hadoop.apache.org/docs/r1.0.4/cn/hdfs_shell.html#FS+Shell)
 * 出現異常:
 ```js
 hadoop@master:~/sparkk/spark101/wordcount/data$ hadoop fs -mkdir hdfs://master/user/
