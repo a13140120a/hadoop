@@ -2,41 +2,42 @@
 
 * ## 目錄:
   * ## [1. HDFS安裝及基本指令](#001)  
-  * ## [2. yarn](#002)
+  * ## [2. YARN](#002)
   * ## [3. Hue](#003)
   * ## [4. Oozie](#004)
   * ## [3.資料擷取模組Sqoop,Flume](#005)
   * ## [4.資料分析模組Pig,Hive](#006)
 
-<h1 id="001">1. HDFS安裝及基本指令</h1>  
+<h2 id="001">1. HDFS安裝及基本指令</h2>  
     
-* 修改本機hostname:
+### 安裝:
+1. 修改本機hostname:
   ```js
   vi /etc/hostname
   ```
-* 建立hadoop使用者以及群組(每台都要)  
-  * 建立群組  
-   ```js
-   sudo addgroup hadoop_group  
-   ```
-   * 建立 Hadoop 專用帳戶
-   ```js
-   sudo adduser --ingroup hadoop_group [帳號]
-   ```
-   * 將 hadoop_admin 帳戶加入 sudo 權限
+2. 建立hadoop使用者以及群組(每台都要)  
+    * 建立群組  
      ```js
-     sudo vi /etc/sudoers
+     sudo addgroup hadoop_group  
      ```
-     下方新增:
+     * 建立 Hadoop 專用帳戶
      ```js
-     [帳號] ALL=(ALL:ALL) ALL
+     sudo adduser --ingroup hadoop_group [帳號]
      ```
-  * 切換至剛剛建立好的 hadoop 管理帳號
-    ```js
-    su [帳號]
-    ```
+     * 將 hadoop_admin 帳戶加入 sudo 權限
+       ```js
+       sudo vi /etc/sudoers
+       ```
+       下方新增:
+       ```js
+       [帳號] ALL=(ALL:ALL) ALL
+       ```
+    * 切換至剛剛建立好的 hadoop 管理帳號
+      ```js
+      su [帳號]
+      ```
     
-* 建立金鑰:
+3. 建立金鑰:
    ```js
    ssh-keygen -t rsa -P '' -f ~/.ssh/id_rsa
    cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys   
@@ -45,7 +46,7 @@
   * 如果沒有.ssh資料夾，就先`ssh localhost` 再登出就會出現了
   
   
-* 安裝java
+4. 安裝java
   * 下載jdk1.8
   * 解壓縮
   ```js
@@ -80,7 +81,7 @@
   java -version
   ```  
   
-* 安裝hadoop
+5. 安裝hadoop
   * 解壓縮
   ```js
   tar zxvf hadoop-2.10.0.tar.gz
@@ -158,12 +159,12 @@
      ```
      
   * 並於/etc/hosts 修改各機器ip及主機名稱 (每台都要)
-  ```js
-  127.0.0.1       localhost
-  192.xxx.x.xxx   master
-  192.xxx.x.xxx   slave1
-  192.xxx.x.xxx   slave2
-  ```
+    ```js
+    127.0.0.1       localhost
+    192.xxx.x.xxx   master
+    192.xxx.x.xxx   slave1
+    192.xxx.x.xxx   slave2
+    ```
   * 修改 `hadoop-env.sh` 檔，在底下添加:
     ```js
     export JAVA_HOME=/home/[帳號]/jdk1.8.0_251  #注意路徑
@@ -207,8 +208,35 @@
   ```
   * 
   
-<h1 id="002">yarn</h1>  
+<h1 id="002">YARN(MRV2)</h1>  
 
+1. 特色:
+  * 傳統MRV1缺點:
+    *  特色: 
+      1. 由 JobTracker 與 TaskTracker 所組成: 
+      2. JobTracker: 扮演 Master 角色，管理所有工作與資源，會盡可能將工作執行與欲處理的資料放安排同一台機器
+      3. TaskTracker: 扮演 Slave 角色，按照 JobTracker 指示執行Map 或 Reduce 工作
+    * 缺點: 
+     1. 延展性差: JobTracker 同時具備資源管理與作業控制功能
+     2. Master 容錯性低: Master 壞掉就會導致單點故障讓所有工作失敗
+     3. 資源利用率低: Map 跟 Reduce 之間資源無法共享
+     4. 無法資源多個計算框架共存: EX: Spark
+  * 使用 YARN:  
+    * 整合異質計算框架: MapReduce, Spark, MPI
+    * 資源利用率高: 資源共享
+    * 維運成本低: 透過少數資源管理器就能管理許多框架
+    * YARN 所包含的原件: 
+      - Resource Manager: 取代原本 JobTracker資源管理功能，由Scheduler 跟 Application Manager 所組成:  
+        Scheduler:將系統資源分配給運行的應用程序   
+        Application Manager: 管理系統中所有的應用程序     
+      - Application Master: 作業控制(檢查TaskTracker及工作執行的狀態)  
+      - Node Manager: 負責每個節點上的資源與任務管理，定時向 Resource Manager 回報目前 Node 跟 container 的運行狀況
+      - Container: 將YARN中的RAM,CPU 磁碟抽象化，當 Application Master 向 Resource Manager 申請資源，Resource Manager 會以 Container 的方式向 Resource Manager 提供資源。
+      
+    
+   
+    
+2. 安裝
   * 修改 `yarn-site.xml` 檔
   ```js
   <configuration>
