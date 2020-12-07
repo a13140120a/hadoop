@@ -201,9 +201,6 @@ mkdir: Call From master/192.168.1.69 to master:8020 failed on connection excepti
       - Node Manager: 負責每個節點上的資源與任務管理，定時向 Resource Manager 回報目前 Node 跟 container 的運行狀況
       - Container: 將YARN中的RAM,CPU 磁碟抽象化，當 Application Master 向 Resource Manager 申請資源，Resource Manager 會以 Container 的方式向 Resource Manager 提供資源。
       
-    
-   
-    
 2. 安裝
   * 修改 `yarn-site.xml` 檔
   ```js
@@ -222,6 +219,10 @@ mkdir: Call From master/192.168.1.69 to master:8020 failed on connection excepti
       <value>yarn</value>
     </property>
   </configuration>
+  ```  
+  *  開啟yarn:
+  ```js
+  ./start-yarn.sh
   ```
 
 
