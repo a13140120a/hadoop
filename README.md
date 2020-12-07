@@ -1,5 +1,15 @@
 # hadoop
 
+* ## 目錄:
+  * ## [1. HDFS安裝及基本指令](#001)  
+  * ## [2. yarn](#002)
+  * ## [3. Hue](#003)
+  * ## [4. Oozie](#004)
+  * ## [3.資料擷取模組Sqoop,Flume](#005)
+  * ## [4.資料分析模組Pig,Hive](#006)
+
+<h1 id="001">1. HDFS安裝及基本指令</h1>  
+    
 * 修改本機hostname:
   ```js
   vi /etc/hostname
@@ -195,7 +205,10 @@
   cd hadoop-2.10.0/sbin
   ./start-dfs.sh
   ```
-* 安裝yarn:(可有可無)
+  * 
+  
+<h1 id="002">yarn</h1>  
+
   * 修改 `yarn-site.xml` 檔
   ```js
   <configuration>
