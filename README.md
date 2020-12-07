@@ -10,7 +10,7 @@
 
 <h2 id="001">1. HDFS安裝及基本指令</h2>  
     
-### 安裝:
+### 安裝(ubuntu):
 1. 修改本機hostname:
   ```js
   vi /etc/hostname
@@ -35,8 +35,12 @@
     * 切換至剛剛建立好的 hadoop 管理帳號
       ```js
       su [帳號]
+      ```  
+    * centos: 
+      ```js
+      sudo groupadd hadoop
+      sudo useradd -g hadoop hadoop
       ```
-    
 3. 建立金鑰:
    ```js
    ssh-keygen -t rsa -P '' -f ~/.ssh/id_rsa
