@@ -122,12 +122,12 @@
      ```js
      <configuration>
            <property>
-                   <name>dfs.namenode.secondary.http-address</name>  #可有可無
+                   <name>dfs.namenode.secondary.http-address</name>  
                    <value>master:50090</value>
            </property>
            <property>
                    <name>dfs.namenode.name.dir</name>
-                   <value>/home/${USER}/hdfs/namenode</value>   #注意路徑
+                   <value>/home/${USER}/hdfs/namenode</value> 
            </property>
            <property>
                    <name>dfs.datanode.data.dir</name>
@@ -155,7 +155,7 @@
     ```
   * 修改 `hadoop-env.sh` 檔，在底下添加:
     ```js
-    export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64  #注意路徑
+    export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64 
     export PATH=$JAVA_HOME/bin:$PATH
 
     export HADOOP_HOME=/home/${USER}/hadoop-2.10.0
@@ -165,7 +165,7 @@
     ```
   * 修改`~/.bashrc`檔，底下添加:(記得source)
     ```js
-    export HADOOP_HOME=/home/${USER}/hadoop-2.10.0   #注意路徑
+    export HADOOP_HOME=/home/${USER}/hadoop-2.10.0 
     export PATH=$HADOOP_HOME/bin:$PATH
 
     export HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop
