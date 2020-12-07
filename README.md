@@ -24,33 +24,12 @@
   ```js
   vi /etc/hostname
   ```
-2. 建立hadoop使用者以及群組(每台都要)  
-    * 建立群組  
-     ```js
-     sudo addgroup hadoop_group  
-     ```
-     * 建立 Hadoop 專用帳戶
-     ```js
-     sudo adduser --ingroup hadoop_group [帳號]
-     ```
-     * 將 hadoop_admin 帳戶加入 sudo 權限
-       ```js
-       sudo vi /etc/sudoers
-       ```
-       下方新增:
-       ```js
-       [帳號] ALL=(ALL:ALL) ALL
-       ```
-    * 切換至剛剛建立好的 hadoop 管理帳號
-      ```js
-      su [帳號]
-      ```  
-    * centos: 
-      ```js
-      sudo groupadd hadoop #建立group
-      sudo useradd -g hadoop hadoop  #建立user
-      ```
-3. 建立金鑰:
+  * centos: 
+    ```js
+    sudo groupadd hadoop #建立group
+    sudo useradd -g hadoop hadoop  #建立user
+    ```
+2. 建立金鑰:
    ```js
    ssh-keygen -t rsa -P '' -f ~/.ssh/id_rsa
    cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys   
@@ -59,7 +38,7 @@
   * 如果沒有.ssh資料夾，就先`ssh localhost` 再登出就會出現了
   
   
-4. 安裝java
+3. 安裝java
   * 下載jdk1.8
   ```js
   sudo apt-get install openjdk-8-jdk
@@ -69,7 +48,7 @@
   java -version
   ```  
   
-5. 安裝hadoop
+4. 安裝hadoop
   * 解壓縮
   ```js
   tar zxvf hadoop-2.10.0.tar.gz
@@ -99,12 +78,12 @@
      <configuration>
           <property>
                <name>hadoop.tmp.dir</name>
-               <value>/home/${USER}/tmp</value>
+               <value>/home/${user.name}/tmp</value>
                <description>Abase for other temporary directories.</description>
           </property>
           <property>
                <name>fs.defaultFS</name>
-               <value>hdfs://{主機}:9000</value>  #注意路徑
+               <value>hdfs://master:9000</value>  #注意路徑
           </property>
      </configuration>
      ```
@@ -127,11 +106,11 @@
            </property>
            <property>
                    <name>dfs.namenode.name.dir</name>
-                   <value>/home/${USER}/hdfs/namenode</value> 
+                   <value>/home/${user.name}/hdfs/namenode</value> 
            </property>
            <property>
                    <name>dfs.datanode.data.dir</name>
-                   <value>/home/${USER}/hdfs/datanode</value>
+                   <value>/home/${user.name}/hdfs/datanode</value>
            </property>
            <property>
                    <name>dfs.replication</name>
@@ -158,28 +137,18 @@
     export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64 
     export PATH=$JAVA_HOME/bin:$PATH
 
-    export HADOOP_HOME=/home/${USER}/hadoop-2.10.0
+    export HADOOP_HOME=/home/${USER}/hadoop-2.10.0  #注意版本
     export PATH=$HADOOP_HOME/bin:$PATH
 
     export HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop  
     ```
   * 修改`~/.bashrc`檔，底下添加:(記得source)
     ```js
-    export HADOOP_HOME=/home/${USER}/hadoop-2.10.0 
+    export HADOOP_HOME=/home/${USER}/hadoop-2.10.0  #注意版本
     export PATH=$HADOOP_HOME/bin:$PATH
 
     export HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop
-    ```
-  * 建立需要的資料夾(hadoop/tmp 還有hdfs/namenode、datanode)
-  ```js
-  cd ~
-  mkdir tmp
-  mkdir hdfs
-
-  cd hdfs
-  mkdir namenode
-  mkdir datanode
-  ```
+    ```  
   * scp 整個hadoop資料夾、jave資料夾、`~/.bashrc` 檔到各個slave:(記得每台都要source)
   ```js
   scp -r hadoop-2.10.0 xxx@xxx.xxx.x.xxx:~
