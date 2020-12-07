@@ -309,7 +309,7 @@ if current_word == word:
 ```
 * 執行:
 ```js
-echo 隨便一段英文句子 |python mapper.py
+echo 隨便一段英文句子 |python mapper.py|sort -k 1|python3 reducer.py
 ```
 
 
