@@ -193,24 +193,40 @@ mkdir: Call From master/192.168.1.69 to master:8020 failed on connection excepti
   * 傳統MRC1運作方式:
     * Client 送出工作給 JobTracker
     * JobTracker 詢問 Name Node 關於資料位置
-    * JobTracker 根據資料(本地性)決定由哪幾個TaskTracker處理資料
+    * JobTracker 根據資料(本地性)決定由哪幾個 TaskTracker 處理資料
     * 傭有資料處的 TaskTracker 會開始啟用 Mapper  
     * 執行完工作之後會將中介結果寫到本地端的磁碟
     * 空閒的 TaskTracker(沒有資料本地性) 會開始啟用 Reducer
     * 將Mapper 的中介結果複製到 Reducer 處進行 Reduce
     * 將處理結果寫回HDFS  
-    * 當
+    * 當 Mapper 運作時，會將產生的中介資料寫在本地端，工作完成之後會被移除
+    * (預測執行)當有工作的預測速度比其他節點要慢時，JobTracker 會再將工作分配給其他節點，兩個比賽誰先完成就吐出結果
+    * 當 TaskTracker 通知 JobTracker 工作結束時，會在HDFS中寫入一個較_SUCCESS的檔案
+    * JobTracker 會通知 TaskTracker 移除中介資料
+    * 會保留 log  
   * 使用 YARN:  
-    * 整合異質計算框架: MapReduce, Spark, MPI
+    * 整合異質計算框架: MapReduce, Spark, MPI  
     * 資源利用率高: 資源共享
     * 維運成本低: 透過少數資源管理器就能管理許多框架
+    * 想像 YARN 代表 Linux(擁有 Resource Manager, Node Manager)，ApplicationMaster 就是 Process，Task 就是 Thread。
     * YARN 所包含的原件: 
       - Resource Manager: 取代原本 JobTracker資源管理功能，由Scheduler 跟 Application Manager 所組成:  
-        Scheduler:將系統資源分配給運行的應用程序   
-        Application Manager: 管理系統中的應用程序     
+          Resource Scheduler:將系統資源分配給運行的應用程序   
+          Application Manager: 管理系統中的應用程序     
       - Application Master: 作業控制(檢查TaskTracker及工作執行的狀態)，與Resource Manager要資源，監控或分派工作給 map task 或 reduce task ，告知 Node Manager 啟動或停止  
       - Node Manager: 負責每個節點(slave)上的資源與任務管理，定時向 Resource Manager 回報目前 Node 跟 container 的運行狀況
       - Container: 根據需求動態配置資源(MRV1配置資源是固定的)，將YARN中的RAM,CPU 磁碟抽象化，當 Application Master 向 Resource Manager 申請資源，Resource Manager 會以 Container 的方式向 Resource Manager 提供資源(每個TASK會被分配一個Container)。
+    * YARN 工作流程: 
+      * 首先 Client 把工作送到 Resource Manager(包含 Scheduler 跟 Application Manager)  
+      * 接下來 Application Manager 會跟 Node Manager 做通訊 由 Node Manager 開啟 Application Master 
+      * 由 Application Master 跟 Resource Manager 溝通並建立連線，Resource Manager便可監控 Application Master 運行狀況  
+      * Application Master 會依任務狀況跟 Resource Scheduler 要資源 
+      * Application Master 要到資源後會與相對應的 Node Manager 溝通  
+      * Node Manager 會依任務需求把 Container 等需求環境準備好  
+      * 準備好環境之後產生 Task ，Task會隨時向 Application Master 溝通，即時掌握 Task 運行狀況
+      * Client 可以隨時利用 Application Master 掌握狀況  
+      * 所有工作結束之後 Application Master 會通知 Resource Manager ，並把工作從 Resource Manager 工作清單中移除。
+      * 移除掉之後把環境關閉。
   * 改進 MRV1 的延展性跟異質性框架相容性
     * 延展性:
       1. 將 JobTracker 中的作業控制及資源管理分開，減少 Loading
