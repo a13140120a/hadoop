@@ -3,6 +3,7 @@
 * ## 目錄:
   * ## [1. HDFS安裝及基本指令](#001)  
   * ## [2. YARN](#002)
+  * ## [3.python撰寫mapreduce範例](#003)
   * ## [3. Hue](#003)
   * ## [4. Oozie](#004)
   * ## [3.資料擷取模組Sqoop,Flume](#005)
@@ -176,19 +177,29 @@ mkdir: Call From master/192.168.1.69 to master:8020 failed on connection excepti
   * core-site.xml檔的9000port改成8020port
   
   
-<h1 id="002">YARN(MRV2)</h1>  
+<h1 id="002">2. YARN(MRV2)</h1>  
 
 1. 特色:
   * 傳統MRV1缺點:
     *  特色: 
-      1. 由 JobTracker 與 TaskTracker 所組成: 
-      2. JobTracker: 扮演 Master 角色，管理所有工作與資源，會盡可能將工作執行與欲處理的資料放安排同一台機器
-      3. TaskTracker: 扮演 Slave 角色，按照 JobTracker 指示執行Map 或 Reduce 工作
+        1. 由 JobTracker 與 TaskTracker 所組成(也就是Daemon 代理運行服務): 
+        2. JobTracker(Master Daemon): 扮演 Master 角色，管理所有工作與資源，會盡可能將工作執行與欲處理的資料放安排同一台機器(老闆)
+        3. TaskTracker(Slave Daemon): 扮演 Slave 角色，按照 JobTracker 指示執行Map 或 Reduce 工作(工人)
     * 缺點: 
-     1. 延展性差: JobTracker 同時具備資源管理與作業控制功能
-     2. Master 容錯性低: Master 壞掉就會導致單點故障讓所有工作失敗
-     3. 資源利用率低: Map 跟 Reduce 之間資源無法共享
-     4. 無法資源多個計算框架共存: EX: Spark
+       1. 延展性差: JobTracker 同時具備資源管理與作業控制功能
+       2. Master 容錯性低: Master 壞掉就會導致單點故障讓所有工作失敗
+       3. 資源利用率低: Map 跟 Reduce 之間資源無法共享
+       4. 無法資源多個計算框架共存: EX: Spark
+  * 傳統MRC1運作方式:
+    * Client 送出工作給 JobTracker
+    * JobTracker 詢問 Name Node 關於資料位置
+    * JobTracker 根據資料(本地性)決定由哪幾個TaskTracker處理資料
+    * 傭有資料處的 TaskTracker 會開始啟用 Mapper  
+    * 執行完工作之後會將中介結果寫到本地端的磁碟
+    * 空閒的 TaskTracker(沒有資料本地性) 會開始啟用 Reducer
+    * 將Mapper 的中介結果複製到 Reducer 處進行 Reduce
+    * 將處理結果寫回HDFS  
+    * 當
   * 使用 YARN:  
     * 整合異質計算框架: MapReduce, Spark, MPI
     * 資源利用率高: 資源共享
@@ -196,10 +207,18 @@ mkdir: Call From master/192.168.1.69 to master:8020 failed on connection excepti
     * YARN 所包含的原件: 
       - Resource Manager: 取代原本 JobTracker資源管理功能，由Scheduler 跟 Application Manager 所組成:  
         Scheduler:將系統資源分配給運行的應用程序   
-        Application Manager: 管理系統中所有的應用程序     
-      - Application Master: 作業控制(檢查TaskTracker及工作執行的狀態)  
-      - Node Manager: 負責每個節點上的資源與任務管理，定時向 Resource Manager 回報目前 Node 跟 container 的運行狀況
-      - Container: 將YARN中的RAM,CPU 磁碟抽象化，當 Application Master 向 Resource Manager 申請資源，Resource Manager 會以 Container 的方式向 Resource Manager 提供資源。
+        Application Manager: 管理系統中的應用程序     
+      - Application Master: 作業控制(檢查TaskTracker及工作執行的狀態)，與Resource Manager要資源，監控或分派工作給 map task 或 reduce task ，告知 Node Manager 啟動或停止  
+      - Node Manager: 負責每個節點(slave)上的資源與任務管理，定時向 Resource Manager 回報目前 Node 跟 container 的運行狀況
+      - Container: 根據需求動態配置資源(MRV1配置資源是固定的)，將YARN中的RAM,CPU 磁碟抽象化，當 Application Master 向 Resource Manager 申請資源，Resource Manager 會以 Container 的方式向 Resource Manager 提供資源(每個TASK會被分配一個Container)。
+  * 改進 MRV1 的延展性跟異質性框架相容性
+    * 延展性:
+      1. 將 JobTracker 中的作業控制及資源管理分開，減少 Loading
+      2. 使用Resource Manager 資源管理與調度
+      3. 動態分配Map Slot 與 Reduce Slot: JobTracker中 Map Slot 與 Reduce Slot 分配是固定的，導致 map 時 Reduce Slot 呈現空閒。
+    * 同時使用各種異質框架:
+      - 可替換上面的計算框架: EX: 使用MPI, Spark
+      
       
 2. 安裝
   * 修改 `yarn-site.xml` 檔
@@ -223,12 +242,59 @@ mkdir: Call From master/192.168.1.69 to master:8020 failed on connection excepti
   *  開啟yarn:
   ```js
   ./start-yarn.sh
+  
+  # 查看yarn node
+  yarn node -list
   ```
+    * Resource Manage: 8088 port
+    * Node Manager: 8042 port
+
+<h1 id="003">3.python撰寫mapreduce範例</h1>  
 
 
+* mapper.py:  
+ ```js
+ import sys
+ for line in sys.stdin:
+     line = line.strip()
+     words=line.split()
+     for word in words:
+         print('%s\t%s' % (word,1))
+ ```
+* reducer.py:
+```js
+from operator import itemgetter
+import sys
 
+current_word = None
+current_count = 0
+word = None
 
+# input comes from STDIN
+for line in sys.stdin:
+    line = line.strip()
+    word, count = line.split('\t', 1)
+    try:
+        count = int(count)
+    except ValueError:
+        continue
+    if current_word == word:
+        current_count += count
+    else:
+        if current_word:
+            print ('%s\t%s' % (current_word, current_count))
+        current_count = count
+        current_word = word
+        
+# do not forget to output the last word if needed!
+if current_word == word:
+    print ('%s\t%s' % (current_word, current_count))
 
+```
+* 執行:
+```js
+echo 隨便一段英文句子 |python mapper.py
+```
 
 
 
