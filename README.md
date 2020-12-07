@@ -61,34 +61,9 @@
   
 4. 安裝java
   * 下載jdk1.8
-  * 解壓縮
   ```js
-  tar zxvf jdk-8u251-linux-x64.tar.gz
+  sudo apt-get install openjdk-8-jdk
   ```
-  * 把資料夾移動到home目錄
-  ```js
-  mv jdk1.8.0_251 ~/
-  ```
-  * 設定 `~/.bashrc` 檔
-    ```js
-    #找到這幾行
-    
-    # enable programmable completion features (you don't need to enable
-    # this, if it's already enabled in /etc/bash.bashrc and /etc/profile
-    # sources /etc/bash.bashrc).
-    if ! shopt -oq posix; then
-      if [ -f /usr/share/bash-completion/bash_completion ]; then
-        . /usr/share/bash-completion/bash_completion
-      elif [ -f /etc/bash_completion ]; then
-        . /etc/bash_completion
-      fi
-    fi
-    
-
-    export JAVA_HOME=/home/{username}/jdk1.8.0_251   #加上這兩行 (注意路徑)
-    export PATH=$JAVA_HOME/bin:$PATH            #加上這兩行
-    ```
-  * 執行~/.bashrc檔 `source ~/.bashrc`
   * 測試 
   ```js 
   java -version
@@ -124,7 +99,7 @@
      <configuration>
           <property>
                <name>hadoop.tmp.dir</name>
-               <value>/home/[帳號]/tmp</value>
+               <value>/home/${USER}/tmp</value>
                <description>Abase for other temporary directories.</description>
           </property>
           <property>
@@ -152,11 +127,11 @@
            </property>
            <property>
                    <name>dfs.namenode.name.dir</name>
-                   <value>/home/[帳號]/hdfs/namenode</value>   #注意路徑
+                   <value>/home/${USER}/hdfs/namenode</value>   #注意路徑
            </property>
            <property>
                    <name>dfs.datanode.data.dir</name>
-                   <value>/home/[帳號]/hdfs/datanode</value>
+                   <value>/home/${USER}/hdfs/datanode</value>
            </property>
            <property>
                    <name>dfs.replication</name>
@@ -180,17 +155,17 @@
     ```
   * 修改 `hadoop-env.sh` 檔，在底下添加:
     ```js
-    export JAVA_HOME=/home/[帳號]/jdk1.8.0_251  #注意路徑
+    export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64  #注意路徑
     export PATH=$JAVA_HOME/bin:$PATH
 
-    export HADOOP_HOME=/home/[帳號]/hadoop-2.10.0
+    export HADOOP_HOME=/home/${USER}/hadoop-2.10.0
     export PATH=$HADOOP_HOME/bin:$PATH
 
     export HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop  
     ```
   * 修改`~/.bashrc`檔，底下添加:(記得source)
     ```js
-    export HADOOP_HOME=/home/[帳號]/hadoop-2.10.0   #注意路徑
+    export HADOOP_HOME=/home/${USER}/hadoop-2.10.0   #注意路徑
     export PATH=$HADOOP_HOME/bin:$PATH
 
     export HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop
