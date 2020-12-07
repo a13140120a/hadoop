@@ -9,7 +9,16 @@
   * ## [4.資料分析模組Pig,Hive](#006)
 
 <h2 id="001">1. HDFS安裝及基本指令</h2>  
+  
+* 由Name Node 與 Data Node組成:  
+  * Name Node 由 fsimage 與 edits log 組成:  
+    - fsimage: HDFS 當時的 snapshot, 檔案較為龐大，讀寫較慢  
+    - edits log: HDFS 自 snapshot 後的變更，edit log 檔案比較小  
     
+* Secondary Name Node:
+  * 非及時備援(Non-Hot Failover)
+  * 監控 Name Node 運行狀態
+  * 排程檢核(每個小時):從 Name Node 處備份 fsimage 跟 edits log，將 fsimage 與 edits log 合併為較大的 fsimage
 ### 安裝(ubuntu):
 1. 修改本機hostname:
   ```js
@@ -38,8 +47,8 @@
       ```  
     * centos: 
       ```js
-      sudo groupadd hadoop
-      sudo useradd -g hadoop hadoop
+      sudo groupadd hadoop #建立group
+      sudo useradd -g hadoop hadoop  #建立user
       ```
 3. 建立金鑰:
    ```js
