@@ -108,7 +108,7 @@
           </property>
           <property>
                <name>fs.defaultFS</name>
-               <value>hdfs://master:9000</value>  #注意路徑
+               <value>hdfs://master:9000</value>  #注意路徑(HDFS預設9000port)
           </property>
      </configuration>
      ```
