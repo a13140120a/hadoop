@@ -15,7 +15,30 @@
   * Name Node 由 fsimage 與 edits log 組成:  
     - fsimage: HDFS 當時的 snapshot, 檔案較為龐大，讀寫較慢  
     - edits log: HDFS 自 snapshot 後的變更，edit log 檔案比較小  
-    
+* 權限控管:
+  * 類似Linux的rwxrwxrwx做User, Group, Others 的權限控管
+    - 644(rw-r--r--)
+    - 755(rwx-r-xr-x)
+    - 600(w---------)
+    - x 代表可以瀏覽目錄
+    - w 代表可以刪除檔案
+    - 用戶名=linux命令中的`whoami`
+    - 組名等於 `bash -c groups`
+  * EX: 
+  ```JS
+  hadoop fs -chmod 755 /data/test2.txt  #修改權限
+  haddop fs –chown  #修改文件所有者    
+  hadoop fs –chgrp  #修改文件所屬組  
+  ```
+  * Kerberos驗證機制:
+    - 票券(Ticketing)驗證
+    - 最廣為測試跟使用的第三方認證
+    - 可以由接受終端做驗證
+    - 使用者先向KDC做請求，請求完拿到 Ticket 後向Service發出請求並驗證 Ticket，驗證成功之後便可發出回應。
+  * 或將Hadoop  Clouster 放到獨立網段
+  * 允許登入方法
+    - 使用 ACL
+    - 使用跳板(所有人都必須先連到跳板做驗證才能夠使用)
 * Secondary Name Node:
   * 非及時備援(Non-Hot Failover)
   * 監控 Name Node 運行狀態
