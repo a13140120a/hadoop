@@ -355,9 +355,110 @@ echo 隨便一段英文句子 |python mapper.py|sort -k 1|python3 reducer.py
 ~/hadoop-2.10.1/share/hadoop/common/lib/protobuf-java-2.5.0.jar
 ~/hadoop-2.10.1/share/hadoop/common/lib/slf4j-api-1.7.25.jar
 ~/hadoop-2.10.1/share/hadoop/common/lib/slf4j-log4j12-1.7.25.jar
+
+或是可以iclude整個share
 ```
+* example: 
+  * getdirlist.java(讀取目錄內容):  
+   ```js
+   package hdfsop;
 
+   import org.apache.hadoop.conf.Configuration;
+   import org.apache.hadoop.fs.FileStatus;
+   import org.apache.hadoop.fs.FileSystem;
+   import org.apache.hadoop.fs.Path;
 
+   public class GetDirList {
+    public static void main(String[] args) throws Exception {
+
+     Configuration configuration = new Configuration();  //new一個 Configuration 的物件
+     configuration.addResource(new Path(                 //路徑(引入core-site.xml)
+       "/usr/local/hadoop/etc/hadoop/core-site.xml")); 
+     configuration.addResource(new Path(                 //路徑(引入hdfs-site.xml)
+       "/usr/local/hadoop/etc/hadoop/hdfs-site.xml"));
+     configuration.set("fs.hdfs.impl",                   //透過DistributedFileSystem做存取
+     org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());  
+     FileSystem fs = FileSystem.get(configuration);      //將 Configuration 餵到 FileSystem.get
+     FileStatus[] status = fs.listStatus(new Path("hdfs://localhost:9000/data/"));  //讀取路徑下所有檔案讀出來
+     for (int i = 0; i < status.length; i++) {
+      System.out.println(status[i].getPath());  //把檔案的名稱print出來
+
+     }
+    }
+   }
+
+   ```
+  * writehdfsfile.java:
+  ```js
+   package hdfsop;
+
+   import java.io.BufferedWriter;
+   import java.io.OutputStreamWriter;
+
+   import org.apache.hadoop.conf.Configuration;
+   import org.apache.hadoop.fs.FileSystem;
+   import org.apache.hadoop.fs.Path;
+
+   public class WriteHDFSFile {
+    public static void main(String[] args) throws Exception {
+
+     Configuration configuration = new Configuration();
+     configuration.addResource(new Path(
+       "/usr/local/hadoop/etc/hadoop/core-site.xml"));
+     configuration.addResource(new Path(
+       "/usr/local/hadoop/etc/hadoop/hdfs-site.xml"));
+     configuration.set("fs.hdfs.impl",
+       org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
+     FileSystem fs = FileSystem.get(configuration);
+     Path pt = new Path("hdfs://localhost:9000/data/tibame.txt");  //打開一個tibame.txt的檔案
+     BufferedWriter br = new BufferedWriter(new OutputStreamWriter(
+       fs.create(pt, true)));
+     String line;               //透過BufferedWriter 的OutputStreamWriter方法寫入檔案
+     line = "Tibame Hadoop\n";  //寫入內容
+     System.out.println(line);  //寫入一行就印出一行
+     br.write(line);
+     br.close();               //關檔
+    }
+  ```
+  
+  * getfilecontent(讀取目錄內容):
+    ```js
+    package hdfsop;
+
+    import java.io.BufferedReader;
+    import java.io.InputStreamReader;
+
+    import org.apache.hadoop.conf.Configuration;
+    import org.apache.hadoop.fs.FileStatus;
+    import org.apache.hadoop.fs.FileSystem;
+    import org.apache.hadoop.fs.Path;
+
+    public class GetFileContent {
+
+     public static void main(String[] args) throws Exception {
+
+      Configuration configuration = new Configuration();
+      configuration.addResource(new Path(
+        "/usr/local/hadoop/etc/hadoop/core-site.xml"));
+      configuration.addResource(new Path(
+        "/usr/local/hadoop/etc/hadoop/hdfs-site.xml"));
+      configuration.set("fs.hdfs.impl",
+        org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
+      FileSystem fs = FileSystem.get(configuration);
+      FileStatus[] status = fs.listStatus(new Path(
+        "hdfs://localhost:9000/data/tibame.txt"));
+      BufferedReader br = new BufferedReader(new InputStreamReader(
+        fs.open(status[0].getPath())));  //讀取第一個檔案的路徑
+      String line = br.readLine();  //逐行讀出
+      while (line != null) {
+       System.out.println(line);
+       line = br.readLine();
+      }
+
+     }
+    }
+
+    ```
 
 
 
