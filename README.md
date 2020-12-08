@@ -4,6 +4,7 @@
   * ## [1. HDFS安裝及基本指令](#001)  
   * ## [2. YARN](#002)
   * ## [3.python撰寫mapreduce範例](#003)
+  * ## [4.Java Api存取HDFS](#004)
   * ## [3. Hue](#003)
   * ## [4. Oozie](#004)
   * ## [3.資料擷取模組Sqoop,Flume](#005)
@@ -75,16 +76,16 @@
 4. 安裝hadoop
   * 解壓縮
   ```js
-  tar zxvf hadoop-2.10.0.tar.gz
+  tar zxvf hadoop-2.10.1.tar.gz
   ```
   * 移動到 home目錄
   ```js
-  mv hadoop-2.10.0 ~/
+  mv hadoop-2.10.1 ~/
   ```
   * 修改 `core-site.xml` 檔
   ```js
   cd ~
-  cd hadoop-2.10.0/etc/hadoop/
+  cd hadoop-2.10.1/etc/hadoop/
   vim core-site.xml
   ```
   * 找到下面:
@@ -114,7 +115,7 @@
 
    * 修改 `hdfs-site.xml` 檔
      ```js
-     cd ~/hadoop-2.10.0/etc/hadoop/
+     cd ~/hadoop-2.10.1/etc/hadoop/
      vim hdfs-site.xml
      ```
   * 一樣修改   
@@ -161,21 +162,21 @@
     export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64 
     export PATH=$JAVA_HOME/bin:$PATH
 
-    export HADOOP_HOME=/home/${USER}/hadoop-2.10.0  #注意版本
+    export HADOOP_HOME=/home/${USER}/hadoop-2.10.1 #注意版本
     export PATH=$HADOOP_HOME/bin:$PATH
 
     export HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop  
     ```
   * 修改`~/.bashrc`檔，底下添加:(記得source)
     ```js
-    export HADOOP_HOME=/home/${USER}/hadoop-2.10.0  #注意版本
+    export HADOOP_HOME=/home/${USER}/hadoop-2.10.1 #注意版本
     export PATH=$HADOOP_HOME/bin:$PATH
 
     export HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop
     ```  
   * scp 整個hadoop資料夾、jave資料夾、`~/.bashrc` 檔到各個slave:(記得每台都要source)
   ```js
-  scp -r hadoop-2.10.0 xxx@xxx.xxx.x.xxx:~
+  scp -r hadoop-2.10.1xxx@xxx.xxx.x.xxx:~
   ```
   * 格式化hadoop:
   ```js
@@ -184,7 +185,7 @@
   * 啟動hadoop:
   ```js
   cd ~
-  cd hadoop-2.10.0/sbin
+  cd hadoop-2.10.1sbin
   ./start-dfs.sh
   ```  
   
@@ -335,7 +336,26 @@ if current_word == word:
 echo 隨便一段英文句子 |python mapper.py|sort -k 1|python3 reducer.py
 ```
 
+<h1 id="004">4.Java Api存取HDFS</h1>  
 
+* 下載eclipse 解壓縮並安裝(jdk1.8與2019-06版本相容，太高不行)
+* 先 new 一個 Project -> 右鍵 build path -> Add External Archives
+* import以下:
+```js
+~/hadoop-2.10.1/share/hadoop/common/hadoop-common-2.10.1.jar
+~/hadoop-2.10.1/share/hadoop/common/lib/commons-collections-3.2.2.jar
+~/hadoop-2.10.1/share/hadoop/common/lib/commons-configuration-1.6.jar
+~/hadoop-2.10.1/share/hadoop/common/lib/commons-lang-2.6.jar
+~/hadoop-2.10.1/share/hadoop/common/lib/commons-logging-1.1.3.jar
+~/hadoop-2.10.1/share/hadoop/common/lib/commons-cli-1.2.jar
+~/hadoop-2.10.1/share/hadoop/common/lib/log4j-1.2.17.jar
+~/hadoop-2.10.1/share/hadoop/common/lib/slf4j-api-1.7.25.jar
+~/hadoop-2.10.1/share/hadoop/common/lib/slf4j-log4j12-1.7.25.jar
+~/hadoop-2.10.1/share/hadoop/common/lib/guava-11.0.2.jar
+~/hadoop-2.10.1/share/hadoop/common/lib/hadoop-auth-2.10.1.jar
+~/hadoop-2.10.1/share/hadoop/common/lib/protobuf-java-2.5.0.jar
+~/hadoop-2.10.1/share/hadoop/hdfs/hadoop-hdfs-2.10.1.jar
+```
 
 
 
