@@ -342,19 +342,19 @@ echo 隨便一段英文句子 |python mapper.py|sort -k 1|python3 reducer.py
 * 先 new 一個 Project -> 右鍵 build path -> Add External Archives
 * import以下:
 ```js
+~/hadoop-2.10.1/share/hadoop/hdfs/hadoop-hdfs-2.10.1.jar
 ~/hadoop-2.10.1/share/hadoop/common/hadoop-common-2.10.1.jar
+~/hadoop-2.10.1/share/hadoop/common/lib/commons-cli-1.2.jar
 ~/hadoop-2.10.1/share/hadoop/common/lib/commons-collections-3.2.2.jar
 ~/hadoop-2.10.1/share/hadoop/common/lib/commons-configuration-1.6.jar
 ~/hadoop-2.10.1/share/hadoop/common/lib/commons-lang-2.6.jar
 ~/hadoop-2.10.1/share/hadoop/common/lib/commons-logging-1.1.3.jar
-~/hadoop-2.10.1/share/hadoop/common/lib/commons-cli-1.2.jar
-~/hadoop-2.10.1/share/hadoop/common/lib/log4j-1.2.17.jar
-~/hadoop-2.10.1/share/hadoop/common/lib/slf4j-api-1.7.25.jar
-~/hadoop-2.10.1/share/hadoop/common/lib/slf4j-log4j12-1.7.25.jar
 ~/hadoop-2.10.1/share/hadoop/common/lib/guava-11.0.2.jar
 ~/hadoop-2.10.1/share/hadoop/common/lib/hadoop-auth-2.10.1.jar
+~/hadoop-2.10.1/share/hadoop/common/lib/log4j-1.2.17.jar
 ~/hadoop-2.10.1/share/hadoop/common/lib/protobuf-java-2.5.0.jar
-~/hadoop-2.10.1/share/hadoop/hdfs/hadoop-hdfs-2.10.1.jar
+~/hadoop-2.10.1/share/hadoop/common/lib/slf4j-api-1.7.25.jar
+~/hadoop-2.10.1/share/hadoop/common/lib/slf4j-log4j12-1.7.25.jar
 ```
 
 
