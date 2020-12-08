@@ -20,7 +20,7 @@
   * 類似Linux的rwxrwxrwx做User, Group, Others 的權限控管
     - 644(rw-r--r--)
     - 755(rwx-r-xr-x)
-    - 600(w---------)
+    - 600(rw--------)
     - x 代表可以瀏覽目錄
     - w 代表可以刪除檔案
     - 用戶名=linux命令中的`whoami`
