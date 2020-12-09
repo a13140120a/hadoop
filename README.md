@@ -574,7 +574,7 @@ public static void main(String[] args) throws Exception{
     * 如果要以value 做sorting 可以定義secondary sort
     * secondary sort 適合用來找出最大最小值
     * 使用自定義的WriteableComparator 或使用 Comoarator類別
-    * job.setSortComparatorClass(Example.class)
+    * job.setSortComparatorClass(Reducer.class)
 * Combiner: 
   * 可以想像是pre-reducer
   * 會在Mapper 接換就預先Reduce 結果: 例如wordcount 問題中可預先針對同樣key 隊到的值進行加總
@@ -584,7 +584,16 @@ public static void main(String[] args) throws Exception{
 * Partitioner: 
   * 控制哪個key 應該到哪個Reducer
   * 預設會分散key 到各個Reducer
-  * 
+  * 可以使用TotalOrderPartitioner 針對key 做排序
+  * 可以設定Custom Partitioner: job.setPartitionerClass(Partitioner.class)
+* 整體流程: 
+  1. Mapper 產生key/value pair
+  2. 會將資料寫入Partition 檔案(Intermediate File)，數量由Reducer 決定
+  3. 每個Partition 檔案會經過排序(可用Comparator自訂排序)
+  4. Comparator 會開始pre-reducer
+  5. Reducer會到Mapper 取得Partition 檔案
+  6. 當所有Mapper 執行完畢，且所有中介檔案被複製到Reducer 後會在執行一次排序
+  7. 執行Reducer 
   
 
 
@@ -594,6 +603,9 @@ public static void main(String[] args) throws Exception{
 
 
 
+
+
+  
 
 
 
