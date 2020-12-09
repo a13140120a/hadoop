@@ -4,7 +4,7 @@
   * ## [1. HDFS安裝及基本指令](#001)  
   * ## [2. YARN](#002)
   * ## [3.python撰寫mapreduce範例](#003)
-  * ## [4.Java Api存取HDFS](#004)
+  * ## [4.Java Api存取HDFS(2.6版)](#004)
   * ## [3. Hue](#003)
   * ## [4. Oozie](#004)
   * ## [3.資料擷取模組Sqoop,Flume](#005)
@@ -246,7 +246,7 @@ mkdir: Call From master/192.168.1.69 to master:8020 failed on connection excepti
       * 由 Application Master 跟 Resource Manager 溝通並建立連線，Resource Manager便可監控 Application Master 運行狀況  
       * Application Master 會依任務狀況跟 Resource Scheduler 要資源 
       * Application Master 要到資源後會與相對應的 Node Manager 溝通  
-      * Node Manager 會依任務需求把 Container 等需求環境準備好  
+      * Node Manager 會依任務需求把 Container 等需求環境準備好並定期回報Node的狀況
       * 準備好環境之後產生 Task ，Task會隨時向 Application Master 溝通，即時掌握 Task 運行狀況
       * Client 可以隨時利用 Application Master 掌握狀況  
       * 所有工作結束之後 Application Master 會通知 Resource Manager ，並把工作從 Resource Manager 工作清單中移除。
@@ -333,16 +333,24 @@ if current_word == word:
 ```
 * 執行:
 ```js
+#原理
 echo 隨便一段英文句子 |python mapper.py|sort -k 1|python3 reducer.py
+
+hadoop jar ~/hadoop-2.10.1/share/hadoop/tools/lib/hadoop-streaming-2.10.1.jar -file ~/mapper.py -mapper mapper.py -file ~/reducer.py  -reducer reducer.py -input /test.txt -output /data
+
+#觀看結果
+hadoop fs -cat /data/part-00000
+
 ```
 
-<h1 id="004">4.Java Api存取HDFS</h1>  
+<h1 id="004">4.Java Api存取HDFS(2.6版)</h1>  
 
 * 下載eclipse 解壓縮並安裝(jdk1.8與2019-06版本相容，太高不行)
 * 先 new 一個 Project -> 右鍵 build path -> Add External Archives
 * import以下:
 ```js
 ~/hadoop-2.10.1/share/hadoop/hdfs/hadoop-hdfs-2.10.1.jar
+~/hadoop-2.10.1/share/hadoop/hdfs/hadoop-hdfs-client-2.10.1.jar
 ~/hadoop-2.10.1/share/hadoop/common/hadoop-common-2.10.1.jar
 ~/hadoop-2.10.1/share/hadoop/common/lib/commons-cli-1.2.jar
 ~/hadoop-2.10.1/share/hadoop/common/lib/commons-collections-3.2.2.jar
@@ -355,6 +363,7 @@ echo 隨便一段英文句子 |python mapper.py|sort -k 1|python3 reducer.py
 ~/hadoop-2.10.1/share/hadoop/common/lib/protobuf-java-2.5.0.jar
 ~/hadoop-2.10.1/share/hadoop/common/lib/slf4j-api-1.7.25.jar
 ~/hadoop-2.10.1/share/hadoop/common/lib/slf4j-log4j12-1.7.25.jar
+~/hadoop-2.10.1/share/hadoop/common/lib/woodstox-core-5.0.3.jar
 
 或是可以iclude整個share
 ```
@@ -379,7 +388,7 @@ echo 隨便一段英文句子 |python mapper.py|sort -k 1|python3 reducer.py
      configuration.set("fs.hdfs.impl",                   //透過DistributedFileSystem做存取
      org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());  
      FileSystem fs = FileSystem.get(configuration);      //將 Configuration 餵到 FileSystem.get
-     FileStatus[] status = fs.listStatus(new Path("hdfs://localhost:9000/data/"));  //讀取路徑下所有檔案讀出來
+     FileStatus[] status = fs.listStatus(new Path("hdfs://master:9000/data/"));  //讀取路徑下所有檔案讀出來
      for (int i = 0; i < status.length; i++) {
       System.out.println(status[i].getPath());  //把檔案的名稱print出來
 
@@ -410,7 +419,7 @@ echo 隨便一段英文句子 |python mapper.py|sort -k 1|python3 reducer.py
      configuration.set("fs.hdfs.impl",
        org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
      FileSystem fs = FileSystem.get(configuration);
-     Path pt = new Path("hdfs://localhost:9000/data/tibame.txt");  //打開一個tibame.txt的檔案
+     Path pt = new Path("hdfs://master:9000/data/tibame.txt");  //打開一個tibame.txt的檔案
      BufferedWriter br = new BufferedWriter(new OutputStreamWriter(
        fs.create(pt, true)));
      String line;               //透過BufferedWriter 的OutputStreamWriter方法寫入檔案
@@ -446,7 +455,7 @@ echo 隨便一段英文句子 |python mapper.py|sort -k 1|python3 reducer.py
         org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
       FileSystem fs = FileSystem.get(configuration);
       FileStatus[] status = fs.listStatus(new Path(
-        "hdfs://localhost:9000/data/tibame.txt"));
+        "hdfs://master:9000/data/tibame.txt"));
       BufferedReader br = new BufferedReader(new InputStreamReader(
         fs.open(status[0].getPath())));  //讀取第一個檔案的路徑
       String line = br.readLine();  //逐行讀出
