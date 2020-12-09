@@ -5,8 +5,6 @@
   * ## [2. YARN](#002)
   * ## [3.python撰寫mapreduce範例](#003)
   * ## [4.Java Api存取HDFS](#004)
-  * ## [3. Hue](#003)
-  * ## [4. Oozie](#004)
   * ## [3.資料擷取模組Sqoop,Flume](#005)
   * ## [4.資料分析模組Pig,Hive](#006)
 
@@ -595,15 +593,30 @@ public static void main(String[] args) throws Exception{
   6. 當所有Mapper 執行完畢，且所有中介檔案被複製到Reducer 後會在執行一次排序
   7. 執行Reducer 
   
+<h2 id="005">3.資料擷取模組Sqoop,Flume</h2>   
 
-
-
-
-
-
-
-
-
+### Sqoop
+Sqoop1 :  
+* 透過JDBC 連線RDB 與 HDFS (Import Export)
+* SQL to Hadoop
+* 使用MR 的Map 去查詢或新增資料
+* 預設使用4個Mapper 
+* 可以限制占用頻寬  
+* 不能進行過濾或去重複的動作
+* 通常使用定期匯入與匯出的工作
+* Sqoop 與資料庫連線蒐集Metadata 再由每個Mapper 分別去資料庫抓取資料，並寫入HDFS 或RDB
+* 支援Incremental Updates(整數, Timestamp) 從記錄點開始做持續匯入、出的動作
+* 使用SQL限制匯入的欄與列
+* 可以匯入CSV或Arvo格式檔案，亦支援大型物件(Blob,Clob)
+* 支援部分資料庫檢視語法(Show, List)
+Sqoop1 VS Sqoop2:
+* Sqoop1: 
+  * Client Model(connector 跟Driver 都裝在client 上)
+  * 只送出map工作
+* Sqoop2: 
+  * Service Model(connector跟Driver 都裝在Server 上)
+  * Mapper 轉移資料，Reducer 轉換資料
+  * 提供更佳的安全性(server權限控管)
 
   
 
