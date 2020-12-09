@@ -630,7 +630,7 @@ Sqoop1 VS Sqoop2:
     export HCAT_HOME  
     export HIVE_CONF_DIR  
     export ACCUMULO_HOME  
-    export ZOOKEEPER_HOME(多行註解Ctrl+v然後按下，選取完之後按shift+i輸入要註解的符號(例如#))  
+    export ZOOKEEPER_HOME(多行註解Ctrl+v然後按下，選取完之後按shift+i輸入要註解的符號(例如#)，然後按esc)  
   * 
 * Sqoop2安裝:
   * 下載: https://downloads.apache.org/sqoop/1.99.7/
