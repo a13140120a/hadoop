@@ -617,6 +617,20 @@ Sqoop1 VS Sqoop2:
   * Service Model(connector跟Driver 都裝在Server 上)
   * Mapper 轉移資料，Reducer 轉換資料
   * 提供更佳的安全性(server權限控管)
+* sqoop安裝:
+  * 下載: https://downloads.apache.org/sqoop/1.4.7/
+  * 解壓縮然後移動到home目錄  
+  * 編輯`~/.bashrc`:
+   ```js
+   export SQOOP_HOME=/home/${USER}/sqoop-1.4.7.bin__hadoop-2.6.0
+   export PATH=$PATH:$SQOOP_HOME/bin:$HADOOP_HOME/bin  #這行和HADOOP_HOME合併
+   ```
+  * 123找到sqoop/bin/configure-sqoop 把以下echo warning的地方都註解掉:  
+    export HBASE_HOME  
+    export HCAT_HOME  
+    export HIVE_CONF_DIR  
+    export ACCUMULO_HOME  
+    export ZOOKEEPER_HOME  
 * Sqoop2安裝:
  * 下載: https://downloads.apache.org/sqoop/1.99.7/
  * 解壓縮然後移動到home目錄
@@ -630,10 +644,20 @@ Sqoop1 VS Sqoop2:
    ```js
    #找到這行，等於後面改成/home/test/hadoop-2.10.1/etc/hadoop/  #自己注意路徑(必須要是絕對路徑)
    org.apache.sqoop.submission.engine.mapreduce.configuration.directory=/home/test/hadoop-2.10.1/etc/hadoop/
-   
    ```
+* 開啟sqoop2:
+  ```js
+  sqoop2-server start
 
-
+  #關閉
+  sqoop2-server stop
+  
+  #確認是否正確開啟
+  wget -qO - localhost:12000/sqoop/version
+  
+  #開啟sqoop shell
+  sqoop2-shell
+  ```
 
 
 
