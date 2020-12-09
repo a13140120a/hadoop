@@ -4,7 +4,7 @@
   * ## [1. HDFS安裝及基本指令](#001)  
   * ## [2. YARN](#002)
   * ## [3.python撰寫mapreduce範例](#003)
-  * ## [4.Java Api存取HDFS(2.6版)](#004)
+  * ## [4.Java Api存取HDFS](#004)
   * ## [3. Hue](#003)
   * ## [4. Oozie](#004)
   * ## [3.資料擷取模組Sqoop,Flume](#005)
@@ -343,7 +343,7 @@ hadoop fs -cat /data/part-00000
 
 ```
 
-<h1 id="004">4.Java Api存取HDFS(2.6版)</h1>  
+<h1 id="004">4.Java Api存取HDFS</h1>  
 
 * 下載eclipse 解壓縮並安裝(jdk1.8與2019-06版本相容，太高不行)
 * 先 new 一個 Project -> 右鍵 build path -> Add External Archives
@@ -365,7 +365,7 @@ hadoop fs -cat /data/part-00000
 ~/hadoop-2.10.1/share/hadoop/common/lib/slf4j-log4j12-1.7.25.jar
 ~/hadoop-2.10.1/share/hadoop/common/lib/woodstox-core-5.0.3.jar
 
-或是可以iclude整個share
+或是可以iclude整個lib裡面的jar檔
 ```
 * example: 
   * getdirlist.java(讀取目錄內容):  
@@ -397,7 +397,7 @@ hadoop fs -cat /data/part-00000
    }
 
    ```
-  * writehdfsfile.java:
+  * writehdfsfile.java(寫入檔案):
   ```js
    package hdfsop;
 
@@ -468,6 +468,138 @@ hadoop fs -cat /data/part-00000
     }
 
     ```
+* MapReduce型態與格式:
+  * [Interface Writable](https://hadoop.apache.org/docs/stable/api/org/apache/hadoop/io/Writable.html) 在套件org.apache.hadoop.io 底下
+    * EX: IntWriteable,LongWriteable,Text
+    * 屬於原生 Primitive Type(intWriteable,longWriteable 等等) Array, Map
+    * 可對應到Java 原生型態 EX: intWriteable = int 
+    * 使用 utf-8 編碼 
+    * 所有 mapper 與 reducer 都必須使用 Interface Writable 的資料型態
+  * [Input](https://hadoop.apache.org/docs/r2.8.4/api/org/apache/hadoop/mapreduce/lib/input/package-summary.html): 
+    * 在套件 org.apache.hadoop.mapreduce.lib.input 底下
+    * InputFormat: FileInputFormat, SequenceFileInputFormat, TextInputFormat 等等
+    * RecordReader: SequenceFileRecordReader, CombineFileRecordReader
+    * 主要提供如何將資料切成可供Map 階段執行的資料分割(splits), 確定Map Task 的個數，產生 RecordReader 類別以從資料分割產生一連串 <k,v>
+    * InputFormat 跟 RecordReader 是 intput 與 key/value 間溝通的橋樑
+  * [Splitter](https://hadoop.apache.org/docs/r2.7.3/api/org/apache/hadoop/mapreduce/InputSplit.html) 在套件org.apache.hadoop.mapreduce.InputSplit 底下 
+    * 紀錄資料的 Metadata
+    * 可序列化，做為資料交換用
+    * 屬於邏輯分割，實際上資料還是以資料塊 Chunk 為單位進行儲存
+    * 為 Mapper 的輸入(spli 輸入 mapper)，一個 Split 對應一個 Mapper，透過 RecordReader 轉成 key/value
+  * [Output](https://hadoop.apache.org/docs/stable/api/org/apache/hadoop/mapreduce/lib/output/package-summary.html) 在套件 org.apache.hadoop.mapreduce.lib.output 底下 
+    * FileOutputFormat, NullOutputFormat ...etc 寫入
+    * 在
+* Mapper 類別:
+   ```js
+               //k1, v1:input key/value
+               //k2, v2:output key/value
+   class Mapper<k1, v1, k2, v2>
+   {
+   void map(k1 key, v1 value Mapper.Context context)  //吃下k1, v1，與 hadoop framwork 溝通產生 map 或reduce 的結果
+   throws IOException, InterruptedException //定義例外
+   {...}
+   }
+   ```
+  * override方法
+    * 當 key/value 還沒出現於 map, 執行 setup 動作
+      ```js
+      protected void setup( Mapper.Context context)
+      throws IOException, InterruptedException //定義例外
+      ```
+    * 當 key/value 已出現於 map, 執行 cleanup 動作
+      ```js
+      protected void cleanup( Mapper.Context context)
+      throws IOException, InterruptedException //定義例外
+      ```
+    * 流程控制: 預設事先執行 setup, 接著執行 map, 最後執行 cleanup
+      ```js
+      protected void run( Mapper.Context context)
+      throws IOException, InterruptedException //定義例外
+      ```
+* Reducer 類別:
+   ```js
+               //k2, v2:input key/value
+               //k3, v3:output key/value
+   class Reducer<k2, v2, k3, v3>
+   {
+   void map(k2 key, Iterable<v2> value Mapper.Context context)  //吃下k1, v1，與 hadoop framwork 溝通產生 map 或reduce 的結果
+   throws IOException, InterruptedException //定義例外
+   {...}
+   }
+   ```
+  * override方法
+    * 當 key/value 還沒出現於 map, 執行 setup 動作
+      ```js
+      protected void setup( Reducer.Context context)
+      throws IOException, InterruptedException //定義例外
+      ```
+    * 當 key/value 已出現於 map, 執行 cleanup 動作
+      ```js
+      protected void cleanup( Reducer.Context context)
+      throws IOException, InterruptedException //定義例外
+      ```
+    * 流程控制: 預設事先執行 setup, 接著執行 map, 最後執行 cleanup
+      ```js
+      protected void run( Reducer.Context context)
+      throws IOException, InterruptedException //定義例外
+      ```
+* Driver 類別:
+```js
+public class ExampleDriver {
+...
+public static void main(String[] args) throws Exception{
+ Configuration conf = new Configuration();  //設定 Configuration
+ Job job = Job.getInstance(conf, "Example"); //設定工作
+ job.setJarByClass(ExampleDriver.class); //設定主類別名稱
+ job.setMapperClass(ExampleMapper.class); //設定 Mapper
+ job.setReducerClass(ExampleReducer.class); //設定 Reducer
+ job.setOutputKeyClass(Text.class); //產出 key 資料類型
+ job.setOutputValueClass(IntWritable.class); //設定產出value 資料類型
+ //FileInputFormat.addInputPath(job, new Path(  //設定Input 路徑
+ //		"hdfs://localhost:9000/data/pg1104.txt"));
+ //FileOutputFormat.setOutputPath(job, new Path(  //設定Output 路徑
+ //		"hdfs://localhost:9000/out8/"));
+ FileInputFormat.addInputPath(job, new Path(args[0]));  //設定Input 路徑
+ FileOutputFormat.setOutputPath(job, new Path(args[1]));  //設定Output 路徑
+ System.exit(job.waitForCompletion(true) ? 0 : 1);  //執行工作並等待結束
+	}
+}
+```
+  
+* sort 與 shuffle: 
+  * MapReduce 產生資料的方式:
+    * map -> shuffle -> reduce
+  * 資料會在map 階段跟 reduce 階段都會進行資料排序
+    * 以key 做 sorting
+    * 如果要以value 做sorting 可以定義secondary sort
+    * secondary sort 適合用來找出最大最小值
+    * 使用自定義的WriteableComparator 或使用 Comoarator類別
+    * job.setSortComparatorClass(Example.class)
+* Combiner: 
+  * 可以想像是pre-reducer
+  * 會在Mapper 接換就預先Reduce 結果: 例如wordcount 問題中可預先針對同樣key 隊到的值進行加總
+  * 可以大量降低中介(Intermediate File)檔案的尺寸:EX: 傳輸(cat,1),(cat,1)與(cat,2)之間的差別
+  * job.setSortCombinerClass(Reducer.class)
+  
+* Partitioner: 
+  * 控制哪個key 應該到哪個Reducer
+  * 預設會分散key 到各個Reducer
+  * 
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
