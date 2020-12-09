@@ -630,22 +630,23 @@ Sqoop1 VS Sqoop2:
     export HCAT_HOME  
     export HIVE_CONF_DIR  
     export ACCUMULO_HOME  
-    export ZOOKEEPER_HOME  
+    export ZOOKEEPER_HOME(多行註解Ctrl+v然後按下，選取完之後按shift+i輸入要註解的符號(例如#))  
+  * 
 * Sqoop2安裝:
- * 下載: https://downloads.apache.org/sqoop/1.99.7/
- * 解壓縮然後移動到home目錄
- * 編輯`~/.bashrc`:
+  * 下載: https://downloads.apache.org/sqoop/1.99.7/
+  * 解壓縮然後移動到home目錄
+  * 編輯`~/.bashrc`:
    ```js
    export SQOOP_HOME=/home/${USER}/sqoop-1.99.7-bin-hadoop200
    export PATH=$PATH:$SQOOP_HOME/bin:$HADOOP_HOME/bin  #這行和HADOOP_HOME合併
    ```
- * source完之後執行`sqoop2-tool verify`:   
+  * source完之後執行`sqoop2-tool verify`:   
    如果出現failed，編輯conf 目錄底下的sqoop.properties:  
    ```js
    #找到這行，等於後面改成/home/test/hadoop-2.10.1/etc/hadoop/  #自己注意路徑(必須要是絕對路徑)
    org.apache.sqoop.submission.engine.mapreduce.configuration.directory=/home/test/hadoop-2.10.1/etc/hadoop/
    ```
-* 開啟sqoop2:
+ * 開啟sqoop2:
   ```js
   sqoop2-server start
 
