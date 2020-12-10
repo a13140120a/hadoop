@@ -664,7 +664,15 @@ Sqoop1 VS Sqoop2:
   * [下載MySQL，底下有txt載入](https://github.com/a13140120a/SQL_note/blob/master/README.md)
   * Create Table
   * [載入txt 檔資料](https://github.com/a13140120a/hadoop/blob/main/ratings.txt)
-  * [下載jdbc並放到sqoop底下的lib目錄中](https://github.com/a13140120a/SQL_note/blob/master/README.md#002)(注意版本!!)
+  * [下載jdbc並放到sqoop底下的lib目錄中](https://github.com/a13140120a/SQL_note/blob/master/README.md#002)(注意版本!!)  
+  * create table:
+  ```js
+  CREATE TABLE ratings(
+  userid INTEGER,
+  itemid INTEGER,
+  ratings INTEGER
+  );
+  ```
   * 測試 :
   ```js
   sqoop list-databases --connect jdbc:mysql://mysql:3306/ --username user --password 000000
@@ -672,10 +680,30 @@ Sqoop1 VS Sqoop2:
   * 若出現問題: ERROR manager.SqlManager: Error executing statement: java.sql.SQLException: Access denied for user 'test'@'localhost' (using password: NO)，是因為權限不足。
   ```js
   #賦予權限
-  GRANT ALL ON *.* TO 'newuser'@'%';
+  GRANT ALL ON *.* TO 'newuser'@'localhost';
   ```
-  
-
+  * Import:
+  ```js
+  sqoop import 
+  --connect jdbc:mysql://localhost:3306/db_name 
+  -username user 
+  --query "select * from ratings where XXX AND \$CONDITIONS limit 200" 
+  #是where後面的引數，AND $CONDITIONS這個引數必須加上而且存在單引號與雙引號的區別，如果--query後面使用的是雙引號，那麼需要在$CONDITIONS前加上\即\$CONDITIONS
+  -target-dir /data/  #HDFS的路徑
+  --password aaa123 
+  --split-by "userid"  #以哪個欄位做區分然後(必要)
+  -m 2  # 幾個mapper去執行任務
+  ```
+  * Export: 
+  ```js
+  sqoop export 
+  --connect jdbc:mysql://localhost/test 
+  --table ratings2 
+  --export-dir /data/ 
+  --username user 
+  -m 2 
+  --password aaa123
+  ```
 
 
 
