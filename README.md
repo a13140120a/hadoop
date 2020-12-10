@@ -688,7 +688,7 @@ Sqoop1 VS Sqoop2:
   --connect jdbc:mysql://localhost:3306/db_name 
   -username user 
   --query "select * from ratings where XXX AND \$CONDITIONS limit 200" 
-  #是where後面的引數，AND $CONDITIONS這個引數必須加上而且存在單引號與雙引號的區別，如果--query後面使用的是雙引號，那麼需要在$CONDITIONS前加上\即\$CONDITIONS
+  #如果query後使用的是雙引號，則$CONDITIONS前必須加反斜線，防止shell識別為自己的變數
   -target-dir /data/  #HDFS的路徑
   --password aaa123 
   --split-by "userid"  #以哪個欄位做區分然後(必要)
@@ -703,7 +703,49 @@ Sqoop1 VS Sqoop2:
   --username user 
   -m 2 
   --password aaa123
+  --fields-terminated-by ',' # 表示HDFS檔案內容使用','去分隔欄位  
+  --hive-import  #直接匯入到hive中
   ```
+  * [連線hive](https://docs.cloudera.com/HDPDocuments/HDP2/HDP-2.6.0/bk_data-access/content/using_sqoop_to_move_data_into_hive.html)
+
+### Flume #
+
+* 只能單向匯入HDFS
+* 從不同來源蒐集(Collect)、聚合(Aggregate) 資料串流(Streaming)
+* 可水平或垂直擴充
+* 可加值處理，去重複化，清理資料，過濾資料 ...等等
+* 每個Flume 的執行程式接命名為 Agent
+* Agent 皆包含: 
+  * Source(讀取Log File來源，將事件傳入Channel)
+    - 可從特定檔案取得資料:  
+      \- Event Driven 或Pollingbased  
+      \- 從特定檔案取得資料(tail -f file)  
+      \- 從特定連結取得資料(192.1.1.10:8888)  
+  * Channel(Source 與Sink 之間的緩衝，負責緩存事件)
+    * 負責Buffer 之間傳遞的訊息  
+      \- Memory  
+      \- Disk  
+      \- JDBC  
+  * Sink(取出事件，將資料放置於HDFS)
+    - 負責儲存資料:    
+      \- Polling Based  
+      \- Localhost:9988(傳到另一個service)  
+      \- hdfs:// (寫入HDFS)  
+* 安裝:
+  * [官網](http://www.apache.org/dyn/closer.lua/flume/1.9.0/apache-flume-1.9.0-bin.tar.gz)
+  * 下載解壓縮安裝並mv 到~ 目錄
+  * 修改.bashrc 並source: 
+  ```js
+  export FLUME_HOME=/home/${USER}/apache-flume-1.9.0-bin/
+  export FLUME_CONF_DIR=/usr/local/flume/
+  export PATH=$PATH:$FLUME_HOME/bin
+  ```
+  * 測試: 
+  ```js
+  flume-ng
+  ```
+  * 
+
 
 
 
