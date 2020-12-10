@@ -331,10 +331,11 @@ if current_word == word:
 ```
 * 執行:
 ```js
-#原理
-echo 隨便一段英文句子 |python mapper.py|sort -k 1|python3 reducer.py
 
 hadoop jar ~/hadoop-2.10.1/share/hadoop/tools/lib/hadoop-streaming-2.10.1.jar -file ~/mapper.py -mapper mapper.py -file ~/reducer.py  -reducer reducer.py -input /test.txt -output /data
+
+#原理
+echo 隨便一段英文句子 |python mapper.py|sort -k 1|python3 reducer.py
 
 #觀看結果
 hadoop fs -cat /data/part-00000
