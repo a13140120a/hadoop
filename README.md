@@ -766,3 +766,37 @@ Sqoop1 VS Sqoop2:
   |file|1. 對資料容錯性高，但是配置較為複雜，需要配置資料目錄和checkpoint目錄<br>2. 不同的file channel 均需配置一個checkpoint 目錄|
   |jdbc|使用內建的java資料庫derby，對event 進行了高容錯性<br>2. 可來取代file channel<br>3. 提供一般資料庫交易t(ransation)的特性，所以也比file channel 更可靠|
 
+* Sink 設定:
+
+  |類型|簡介|
+  | --- | --- |
+  |hdfs|將數據寫道hdfs上|
+  |logger|1. 採用logger，logger 可以配置輸出到控制台stdout，也可輸出到檔案<br>2. logger 對訊息長度有限制，超過限制會截斷訊息|
+  |avro|發送給另一個avro 的source|
+  |thrift|發送給另一個thrift 的source|
+  |irc|Internet Relay Chat|
+  |file_roll|1. 本地檔案，支援檔案輪替(rotate)<br>2. 可設定大小、時間、事件記數來進行輪替|
+  |null|丟棄事件|
+  |hbase asynchbase|寫到hbase中，需搭配hbase 的table、columnFaimly|
+  |Solr|將資料傳遞至Solr|
+  |Elasti Search|將資料傳遞至Elasti Search|
+  |$FQCN|寫到特定FQCN|
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
