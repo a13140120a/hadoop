@@ -661,12 +661,20 @@ Sqoop1 VS Sqoop2:
   sqoop2-shell
   ```
 * 使用sqoop 轉移結構化資料:   
-  * [下載MySQL](https://github.com/a13140120a/SQL_note/blob/master/README.md)
+  * [下載MySQL，底下有txt載入](https://github.com/a13140120a/SQL_note/blob/master/README.md)
   * Create Table
-  * 載入txt 檔資料
-
+  * [載入txt 檔資料](https://github.com/a13140120a/hadoop/blob/main/ratings.txt)
+  * [下載jdbc並放到sqoop底下的lib目錄中](https://github.com/a13140120a/SQL_note/blob/master/README.md#002)(注意版本!!)
+  * 測試 :
+  ```js
+  sqoop list-databases --connect jdbc:mysql://mysql:3306/ --username user --password 000000
+  ```
+  * 若出現問題: ERROR manager.SqlManager: Error executing statement: java.sql.SQLException: Access denied for user 'test'@'localhost' (using password: NO)，是因為權限不足。
+  ```js
+  #賦予權限
+  GRANT ALL ON *.* TO 'newuser'@'%';
+  ```
   
-
 
 
 
