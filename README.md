@@ -660,9 +660,12 @@ Sqoop1 VS Sqoop2:
   #開啟sqoop shell
   sqoop2-shell
   ```
+* 使用sqoop 轉移結構化資料:   
+  * [下載MySQL](https://github.com/a13140120a/SQL_note/blob/master/README.md)
+  * Create Table
+  * 載入txt 檔資料
 
-
-
+  
 
 
 
