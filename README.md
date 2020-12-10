@@ -744,10 +744,25 @@ Sqoop1 VS Sqoop2:
   ```js
   flume-ng
   ```
-  * 
+* Source 設定:
 
-
-
-
-
+  |類型|簡介|
+  | --- | --- |
+  |avro|1. 提供一個以avro 為協議的服務，並bind 到某個port 上，等待avro 協定用戶端發過來的訊息<br>2. avro 為一種序列化的資料交換格式<br>3. 一般在agent 之間傳輸資料時，可以配置為avro|
+  |thrift|1. 使用Thrift作為傳輸協議<br>2. 跟avro 類似，交換過程較麻煩，已逐漸被avro取代|
+  |exec|執行一個unix 指令，以stdout 做為資料來源，命令可以通`<agent>.<source>.command`來配置，如: tail -f /var/log/mesg 指令出現的stdout |
+  |netcat|1. 監控特定port 每一行作為一個事件的傳輸<br>2. 假使輸入的資料為text，每一行資料最大長度(max-line-lengrh)預設為512|
+  |http|支援http 的post 和get|
+  |scribe|org.apache.flume.source.scribe.ScribeSource|
+  |syslogtcp<br>syslogudp|監聽syslog，支援tcp 及udp|
+  |sequence source(seq)|自動產生編號|
+  |spooling directory source|1. 監控某個目錄下的所有檔案，如果有新檔案進來則將其新加入的檔案做為資料來源傳輸<br>2. 每傳輸一個檔案後，會被rename 成其他名字(表示已經傳輸過)或者刪掉<br>3. 預設監控目錄下的檔具有:immutable、uniquely-named屬性|
+  |jims|從訊息佇列獲取資料，active message queue|
+ 
+* Channel 設定: 
+  |類型|簡介|
+  | --- | --- |
+  |memory|訊息放在記憶體中，提供高吞吐量，但容錯性低，可能因為裝載的機器毀損而導致資料消失|
+  |file|1. 對資料容錯性高，但是配置較為複雜，需要配置資料目錄和checkpoint目錄<br>2. 不同的file channel 均需配置一個checkpoint 目錄|
+  |jdbc|使用內建的java資料庫derby，對event 進行了高容錯性<br>2. 可來取代file channel<br>3. 提供一般資料庫交易t(ransation)的特性，所以也比file channel 更可靠|
 
