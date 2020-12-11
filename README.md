@@ -987,12 +987,44 @@ Sqoop1 VS Sqoop2:
 * 操作Hive 資料表:
   * 建立內部資料表:ratings
   ```js
-  create table ratings(userid INT,itemid INT, rating INT) ROW FORMAT DELIMITED FIELDS TERMINATED BY '\t'
+  # tab為資料分隔符號
+  CREATE TABLE ratings(userid INT,itemid INT, rating INT) ROW FORMAT DELIMITED FIELDS TERMINATED BY '\t'
   ```
-  * 將本地端資料ratings.csv讀入ratings表格
+  * 將本地端資料[ratings.csv](https://github.com/a13140120a/hadoop/blob/main/ratings.tsv)讀入ratings表格
   ```js
-  
+  LOAD DATA LOCAL INPATH '/home/user/ratings.tsv' OVERWRITE INTO TABLE ratings;
   ```
+  * 查看table:
+  ```js
+  desc ratings;
+  ```
+  * 建立外部資料表:items
+  ```js
+  CREATE EXTERNAL TABLE items(itemid INT,category STRING) ROW FORMAT DELIMITED FIELDS TERMINATED BY '\t' LOCATION '/external'
+  ```
+  * 清洗後將資料items.txt 從本地端 放置於HDFS
+  ```js
+  #改變分隔符號
+  cat items.txt |tr -s ":" "\t" >items2.txt
+  mv -f items2.txt items.txt
+  
+  hadoop fs -mkdir /external
+  hadoop fs -put items.txt /external
+  ```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
