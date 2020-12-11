@@ -940,8 +940,16 @@ Sqoop1 VS Sqoop2:
   ```
   * 把[MySQL的JDBC檔](https://github.com/a13140120a/SQL_note/edit/master/README.md#002)放進hive底下的lib目錄
   * MySQL 建立一個名為hive_metadata 的資料庫
-
-
+  * [創建剛剛設定的USER](https://github.com/a13140120a/SQL_note/blob/master/README.md)
+  ```js
+  CREATE USER 'user'@'%' IDENTIFIED BY 'newpassword';
+  #賦予權限
+  GRANT ALL PRIVILEGES ON *.* TO 'user'@'%'
+  FLUSH PRIVILEGES;
+  
+  #退出MySQL 病重啟
+  sudo /etc/init.d/mysql restart
+  ``` 
 
 
 
