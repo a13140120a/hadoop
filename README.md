@@ -714,6 +714,10 @@ Sqoop1 VS Sqoop2:
 * 從不同來源蒐集(Collect)、聚合(Aggregate) 資料串流(Streaming)
 * 可水平或垂直擴充
 * 可加值處理，去重複化，清理資料，過濾資料 ...等等
+* 具交易性:使用ack 確定下游downsteam 有收到資料，否則上游(stream)會重送資料。
+* HA 及平行擴充:
+  - Hot/Standby Mode (及時備援)
+  - 可以平行擴充成多台上游(Upstream)蒐集資料
 * 每個Flume 的執行程式接命名為 Agent
 * Agent 皆包含: 
   * Source(讀取Log File來源，將事件傳入Channel)
@@ -782,9 +786,23 @@ Sqoop1 VS Sqoop2:
   |Elasti Search|將資料傳遞至Elasti Search|
   |$FQCN|寫到特定FQCN|
 
+* Flume Interceptor
+  * Flume 的擴充元件
+  * 可以在資料即時傳輸的過程中更改資料，或做資料加值(擴充新的Source, Sink, Channel)
+  * 可以在Source, Sinks 之間增加資料處理功能
+    - 例如可以增加正規表達式，做抽取或過濾的功能
+    - 客製的擴充腳本必須是Java
+  * 實作透過org.apache.flume.interceptor.Interceptor 介面
+  * 現有Interceptor :
+    - Timestamp Interceptor: 於是建標頭上寫入時間標籤
+    - Host Interceptor: 於事件標頭上寫入Agent 來源
+    - Static Interceptor: 使用者可以在標頭上增添任意值
+    - UUID Inceptor: 可以為每個事件加註UUID
 
-
-
+* 維護Flume 
+  * 使用Deployment 或Config 管理工具
+    - 透過其他軟體同時間散佈到大量機器上 EX: Puppet, Chef
+  * 散佈出去之後Config 檔會隨著property 的變更即時更改，不用重啟Agent
 
 
 
