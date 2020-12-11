@@ -984,6 +984,12 @@ Sqoop1 VS Sqoop2:
         </property>
 	```
 
+* 操作Hive 資料表:
+  * 建立內部資料表:ratings
+  ```js
+  create table ratings(userid INT,itemid INT, rating INT) ROW FORMAT DELIMITED FIELDS TERMINATED BY '\t'
+  ```
+  * 將本地端資料ratings.csv讀入ratings表格
 
 
 
