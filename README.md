@@ -929,15 +929,6 @@ Sqoop1 VS Sqoop2:
   export HIVE_CONF_DIR=/home/${USER}/apache-hive-2.3.7-bin/conf
 
   ```
-  * 新增剛剛設定的目錄: 
-  ```js
-  hadoop fs -mkdir -p  /user/hive/warehouse
-  hadoop fs -mkdir -p /tmp/hive
-  
-  #修改權限
-  hadoop fs -chmod 777 /user/hive/warehouse
-  hadoop fs -chmod 777 /tmp/hive
-  ```
   * 把[MySQL的JDBC檔](https://github.com/a13140120a/SQL_note/edit/master/README.md#002)放進hive底下的lib目錄(8.0.22版可)
   * MySQL 建立一個名為hive_metadata 的資料庫
   * [創建剛剛設定的USER](https://github.com/a13140120a/SQL_note/blob/master/README.md)
