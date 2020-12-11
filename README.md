@@ -983,7 +983,14 @@ Sqoop1 VS Sqoop2:
           <value>${user.name}</value>
         </property>
 	```
-
+* 內部與外部資料表比較:
+  * 外部資料表:
+    - Drop Table只會移除metastore，不會影響到HDFS 的資料
+    - 可以使用/user/hive/warehouse 以外的HDFS 資料
+  * 內部資料表:
+    - 存在於預設的HDFS內的/user/hive/warehouse
+    - 預設只有Hive 可以存取該部分資料
+    - Drop Table會移除metastore 以及HDFS 的資料
 * 操作Hive 資料表:
   * 建立內部資料表:ratings
   ```js
@@ -1002,7 +1009,7 @@ Sqoop1 VS Sqoop2:
   ```js
   CREATE EXTERNAL TABLE items(itemid INT,category STRING) ROW FORMAT DELIMITED FIELDS TERMINATED BY '\t' LOCATION '/external'
   ```
-  * 清洗後將資料items.txt 從本地端 放置於HDFS
+  * 清洗後將資料[items.txt](https://github.com/a13140120a/hadoop/blob/main/items.txt) 從本地端 放置於HDFS
   ```js
   #改變分隔符號
   cat items.txt |tr -s ":" "\t" >items2.txt
@@ -1011,8 +1018,19 @@ Sqoop1 VS Sqoop2:
   hadoop fs -mkdir /external
   hadoop fs -put items.txt /external
   ```
-
-
+  * 查詢items:
+  ```js
+  DESC items;
+  DESC EXTENDED items;
+  SELECT * FROM items;
+  
+  #join
+  select * from ratings s join items i on s.itemid=i.itemid limit 30;
+  ```
+  * 設定成本地端運行(不用mapreduce)，較快:
+  ```js
+  SET hive.exec.mode.local.auto=true;
+  ```
 
 
 
