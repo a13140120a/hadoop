@@ -883,7 +883,7 @@ Sqoop1 VS Sqoop2:
   ```
   * 設定檔hive-default.xml介紹:(連線MySQL)
   ```js
-  cp hive-default.xml.template hive-default.xml
+  cp hive-default.xml.template hive-site.xml
   vim hive-default.xml
   
   <property>
@@ -899,7 +899,7 @@ Sqoop1 VS Sqoop2:
   </property>
   <property>
     <name>javax.jdo.option.ConnectionURL</name>
-    <value>jdbc:mysql://local:3306/hive_metadata?createDatabaseIfNotExist=true</value>
+    <value>jdbc:mysql://localhost:3306/hive_metadata?createDatabaseIfNotExist=true</value>
     <description>連線mySQL資料庫，預設是使用內建derby資料庫</description>
   </property>
   <property>
@@ -919,7 +919,7 @@ Sqoop1 VS Sqoop2:
   </property>
   ```
   
-  * 編輯hive.sh: 
+  * 編輯hive-env.sh: 
   ```js
   cp hive-env.sh.template hive-env.sh
   vim hive-env.sh
@@ -935,10 +935,10 @@ Sqoop1 VS Sqoop2:
   hadoop fs -mkdir -p /tmp/hive
   
   #修改權限
-  hadoop fs -chmod g+w /user/hive/warehouse
-  hadoop fs -chmod g+w /tmp/hive
+  hadoop fs -chmod 777 /user/hive/warehouse
+  hadoop fs -chmod 777 /tmp/hive
   ```
-  * 把[MySQL的JDBC檔](https://github.com/a13140120a/SQL_note/edit/master/README.md#002)放進hive底下的lib目錄
+  * 把[MySQL的JDBC檔](https://github.com/a13140120a/SQL_note/edit/master/README.md#002)放進hive底下的lib目錄(8.0.22版可)
   * MySQL 建立一個名為hive_metadata 的資料庫
   * [創建剛剛設定的USER](https://github.com/a13140120a/SQL_note/blob/master/README.md)
   ```js
@@ -947,7 +947,7 @@ Sqoop1 VS Sqoop2:
   GRANT ALL PRIVILEGES ON *.* TO 'user'@'%'
   FLUSH PRIVILEGES;
   
-  #退出MySQL 病重啟
+  #退出MySQL 並重啟
   sudo /etc/init.d/mysql restart
   ``` 
 
