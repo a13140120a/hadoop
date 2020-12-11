@@ -990,7 +990,9 @@ Sqoop1 VS Sqoop2:
   create table ratings(userid INT,itemid INT, rating INT) ROW FORMAT DELIMITED FIELDS TERMINATED BY '\t'
   ```
   * 將本地端資料ratings.csv讀入ratings表格
-
+  ```js
+  
+  ```
 
 
 
