@@ -810,8 +810,136 @@ Sqoop1 VS Sqoop2:
     * [log-generator.py](https://github.com/a13140120a/hadoop/blob/main/log-generator.py)
     * 由`log-generator.py` 產生假的log資料寫入/tmp/log-generator.log 再由agent1 蒐集/tmp/log-generator.log 產生的資料並導入agent2 ，最後由agent2 寫入HDFS。
   * 流程:
-    * 打開agent
+    * 於檔案所在的當前目錄啟動log_generator.py, agent2 及agent1:(一隻一個bash)
+      ```js
+      python log_generator.py
+      flume-ng agent --conf-file agent2.properties --name agent2
+      flume-ng agent --conf-file agent1.properties --name agent1
+      ```
+    * 就可以於HDFS 中看到產生的log 資料了
 
+<h2 id="006">4.資料分析模組Pig,Hive</h2>  
+
+## Hive & Pig ##
+* 讓非開發者也能輕鬆操作Hadoop
+* Hive - SQL Like Language
+* Pig - Data Flow Language
+* 比原生Java 平均大約慢10~15%
+* 讓開發者更有生產力，節省寫Code 的時間，把更多時間花在資料處理
+* 使用情境:
+  * hive
+    * 當有明確的Schema
+    * 當資料適合使用SQL
+    * 高容錯姓
+  * Pig
+    * 可以執行複雜的ETE
+    * Pig提供較Hive 更多控制
+    * 高容錯姓
+  * Impala
+    * 有明確的Schema
+    * 即時性互動查詢
+    * 低容錯性的即時分析
+----
+
+### Hive #  
+* Facebook 所開發
+* SQL-Like 語言(偏向MySQL)
+* Hive 是建立於Hadoop 之上的資料倉儲套件
+* Hive 可以以Client 的形式安裝
+* 或是可以使用網路服務存取，EX: 架設在server 上的 Hue(Web interface) 或者HiveServer2(ODBC, JDBC)
+* 需要 metastore: 提供Hive 資料的映對(Mapping)，儲存table, 路徑, query 等等，轉換成mapreduce工作並送往cluster
+* Hive 會跟 Pre-built 的Binaries 會轉換成Jar 檔去submmit 工作，並透過MapReduce 的工作執行 Query。
+* 不會產生 Java 原始碼，所以不能做修改
+* 優點:  
+  * 簡潔方便、較易學習(相較Jave 而言)
+  * Ad-Hoc 分析(比 Impala慢): 回答單一、確定的商業問題
+  * 可以依時間分割資料(Partition)(加速查詢)
+  * DBA(資料庫管理員) 可以重複使用部分Query(同MySQL 語法)
+  * 使用共用的View 可以加入分析
+    * 專注在資料表的建立與寫入
+    * 共用的view 可以加速分析
+* 缺點: 
+  * 無法即時分析(需使用impala)
+  * 非高效能(需使用impala)
+  * 如需要使用資料ETL(請使用PIG)
+  * 如需要精細控制流程，例如ifelse(請使用PIG)
+  * 難以處理非結構化資料(請使用PIG)
+* 與傳統資料庫比較:
+  * 不提供:
+    - row-level insert
+    - updates
+    - deletes
+    - Transactions
+  * 並非資料庫
+  * Hive 並非用作線上交易
+  * Hive 並不提供即時查詢 (可使用impala 替代)
+* 安裝:
+  * [下載](https://downloads.apache.org/hive/hive-2.3.7/)
+  * 解壓縮然後移動到home目錄
+  * 編輯`~/.bashrc`:
+  ```js
+  export HIVE_HOME=/home/${USER}/apache-hive-2.3.7-bin
+  export PATH=$PATH:$HIVE_HOME/bin:$HIVE_HOME/conf
+  ```
+  * 設定檔hive-default.xml介紹:(連線MySQL)
+  ```js
+  cp hive-default.xml.template hive-default.xml
+  vim hive-default.xml
+  
+  <property>
+    <!--  this should eventually be deprecated since the metastore should supply this -->
+    <name>hive.metastore.warehouse.dir</name>
+    <value>/user/hive/warehouse</value>
+    <description>指定Hive 資料儲存目錄，為HDFS路徑，可改可不改</description>
+  </property>
+  <property>
+    <name>hive.exec.scratchdir</name>
+    <value>/tmp/hive</value>
+    <description>指定Hive 資料暫存檔案目錄，為HDFS路徑</description>
+  </property>
+  <property>
+    <name>javax.jdo.option.ConnectionURL</name>
+    <value>jdbc:mysql://local:3306/hive_metadata?createDatabaseIfNotExist=true</value>
+    <description>連線mySQL資料庫，預設是使用內建derby資料庫</description>
+  </property>
+  <property>
+    <name>javax.jdo.option.ConnectionDriverName</name>
+    <value>com.mysql.jdbc.Driver</value>
+    <description>jdbc名稱，這邊要改</description>
+  </property>
+    <property>
+    <name>javax.jdo.option.ConnectionUserName</name>
+    <value>user</value>
+    <description>指定連線mysql的用戶名稱</description>
+  </property>
+  <property>
+    <name>javax.jdo.option.ConnectionPassword</name>
+    <value>aaa123</value>
+    <description>連線資料庫的密碼</description>
+  </property>
+  ```
+  
+  * 編輯hive.sh: 
+  ```js
+  cp hive-env.sh.template hive-env.sh
+  vim hive-env.sh
+  
+  #加上(注意版本)
+  HADOOP_HOME=/home/${USER}/hadoop-2.10.1
+  export HIVE_CONF_DIR=/home/${USER}/apache-hive-2.3.7-bin/conf
+
+  ```
+  * 新增剛剛設定的目錄: 
+  ```js
+  hadoop fs -mkdir -p  /user/hive/warehouse
+  hadoop fs -mkdir -p /tmp/hive
+  
+  #修改權限
+  hadoop fs -chmod g+w /user/hive/warehouse
+  hadoop fs -chmod g+w /tmp/hive
+  ```
+  * 把[MySQL的JDBC檔](https://github.com/a13140120a/SQL_note/edit/master/README.md#002)放進hive底下的lib目錄
+  * MySQL 建立一個名為hive_metadata 的資料庫
 
 
 
