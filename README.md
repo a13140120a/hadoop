@@ -803,9 +803,11 @@ Sqoop1 VS Sqoop2:
   * 使用Deployment 或Config 管理工具
     - 透過其他軟體同時間散佈到大量機器上 EX: Puppet, Chef
   * 散佈出去之後Config 檔會隨著property 的變更即時更改，不用重啟Agent
-
-
-
+* 實際範例:
+  * [agent1](https://github.com/a13140120a/hadoop/blob/main/agent1.properties)
+  * [agent2](https://github.com/a13140120a/hadoop/blob/main/agent2.properties)
+  * [log-generator.py](https://github.com/a13140120a/hadoop/blob/main/log-generator.py)
+  * 由`log-generator.py` 產生假的log資料寫入/tmp/log-generator.log 再由agent1 蒐集/tmp/log-generator.log 產生的資料並導入agent2 ，最後由agent2 寫入HDFS。
 
 
 
