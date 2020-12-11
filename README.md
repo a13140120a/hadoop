@@ -950,9 +950,39 @@ Sqoop1 VS Sqoop2:
   #退出MySQL 並重啟
   sudo /etc/init.d/mysql restart
   ``` 
+  * 測試(輸入hive)出現以下代表成功:
+  ```js
+  test@master:~$ hive
+  SLF4J: Class path contains multiple SLF4J bindings.
+  SLF4J: Found binding in [jar:file:/home/test/apache-hive-2.3.7-bin/lib/log4j-slf4j-impl-2.6.2.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+  SLF4J: Found binding in [jar:file:/home/test/hadoop-2.10.1/share/hadoop/common/lib/slf4j-log4j12-1.7.25.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+  SLF4J: See http://www.slf4j.org/codes.html#multiple_bindings for an explanation.
+  SLF4J: Actual binding is of type [org.apache.logging.slf4j.Log4jLoggerFactory]
 
+  Logging initialized using configuration in jar:file:/home/test/apache-hive-2.3.7-bin/lib/hive-common-2.3.7.jar!/hive-log4j2.properties Async: true
+  Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. spark, tez) or using Hive 1.X releases.
+  hive> 
+  hive> create table test(id string);
+  Loading class `com.mysql.jdbc.Driver'. This is deprecated. The new driver class is `com.mysql.cj.jdbc.Driver'. The driver is automatically registered via the SPI and manual loading of the driver class is generally unnecessary.
+  OK
+  Time taken: 4.575 seconds
 
-
+  ```
+  * 出現問題:
+  ```js
+  Exception in thread "main" java.lang.IllegalArgumentException: java.net.URISyntaxException: Relative path in absolute URI: ${system:java.io.tmpdir%7D/$%7Bsystem:user.name%7D
+  ```
+    * 解決: 在hive-site.xml 的\<configuration\> 下加上:
+	```js
+	<property>
+         <name>system:java.io.tmpdir</name>
+         <value>/tmp/hive/java</value>
+        </property>
+        <property>
+          <name>system:user.name</name>
+          <value>${user.name}</value>
+        </property>
+	```
 
 
 
