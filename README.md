@@ -1067,22 +1067,25 @@ Sqoop1 VS Sqoop2:
     * 建立分統表格及讀取資料[top_ratings.tsv](https://github.com/a13140120a/hadoop/blob/main/top_ratings.tsv):  
     ```js
     # 先將top_ratings.tsv 改名成 ratings.tsv
-    CREATE TABLE bucket_ratings(userid INT,itemid INT,rating INT) CLUSTERED BY(rating) SORTED BY(rating ASC) INTO 5 BUCKETS ROW FORMAT DELIMITED FIELDS TERMINATED BY '\t';
+    CREATE TABLE bucket_ratings(userid INT,itemid INT,rating INT) CLUSTERED BY(userid) SORTED BY(userid ASC) INTO 5 BUCKETS ROW FORMAT DELIMITED FIELDS TERMINATED BY '\t';
     
-    LOAD DATA LOCAL INPATH 'ratings.tsv' overwrite INTO TABLE bucket_ratings;
+    LOAD DATA LOCAL INPATH '/home/test/ratings.tsv' overwrite INTO TABLE bucket_ratings;
     #出現錯誤: FAILED: SemanticException Please load into an intermediate table and use 'insert... select' to allow Hive to enforce bucketing. Load into bucketed tables are disabled for safety reasons. If you .....
     
-    # 解決(較推薦):到hive-site.xml 裡面修改hive.strict.checks.bucketing 的值為false
+    # 解決1:到hive-site.xml 裡面修改hive.strict.checks.bucketing 的值為false
     
-    # 解決(較不推薦): 先建立一個一樣Schema 的普通Table ，把資料load 到普通Table之後再 insert 進去 bucket table
+    # 解決2: 先建立一個一樣Schema 的普通Table ，把資料load 到普通Table之後再 insert 進去 bucket table
     CREATE TABLE bucket_common(userid INT,itemid INT,rating INT) ROW FORMAT DELIMITED FIELDS TERMINATED BY '\t' ;
     LOAD DATA LOCAL INPATH 'ratings.tsv' INTO TABLE bucket_common;
     # 順序要對到
     INSERT INTO TABLE bucket_ratings SELECT userid,itemid,rating FROM bucket_common;
 
-    
     #查看
     SELECT * FROM bucket_ratings LIMIT 10;
     ```
-
+    * 分桶查詢:
+    ```js
+    SELECT * FROM bucket_ratings TABLESAMPLE(BUCKET 2 OUT OF 5);
+    # 如果key 的種類少於分桶數量，會自動依照key的種類分桶，例如如果user id 只有4種，最多就只會分四桶
+    ```
 
