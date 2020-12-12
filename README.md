@@ -1022,10 +1022,18 @@ Sqoop1 VS Sqoop2:
   ```js
   SET hive.exec.mode.local.auto=true;
   ```
+  * 比較:
+  ```js
+  #drop 掉外部資料表之後資資料還在
+  drop table items;
+  hadoop fs -ls /external
+  
+  #drop 掉內部資料表之後資料不見了
+  drop table fs -ls /user/hive/warehouse
+  ```
 
-
-
-
+* 資料切割partition &bucket: 
+  * 當資料儲存在資料庫內同一表格時，若資料量非常大，查尋速度會很慢，這時候就可以建立邏輯分割partition
 
 
 
