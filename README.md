@@ -66,6 +66,11 @@
   ```js
   sudo apt-get install openjdk-8-jdk
   ```
+  * 編輯`~/.bashrc` ，在最底下加上:
+  ```js
+  export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64 
+  export PATH=$JAVA_HOME/bin:$PATH
+  ```
   * 測試 
   ```js 
   java -version
@@ -1167,10 +1172,36 @@ Sqoop1 VS Sqoop2:
   * 如需要共用的架構(View, Table)(使用Hive)
   * 如需要使用資料庫已有的SQL Script(使用Hive)
   * 若資料有明確的schema(使用hive)
+* 安裝:
+  * [下載](https://downloads.apache.org/pig/pig-0.17.0/)
+  * 解壓縮然後移動到home目錄
+  * 編輯`~/.bashrc` 然後source:
+  ```js
+  export PIG_INSTALL=/home/${USER}/apache-hive-2.3.7-bin
+  export PATH=$PATH:$PIG_INSTALL/bin
+  ```
+  * 測試:
+  ```js
+  pig-help
+  ```
+  * 編輯hadoop 底下的 map-site.xml， 加上
+  ```js
 
-
-
-
-
-
+  ```
+  * 然後執行:
+  ```js
+  ./mr-jobhistory-daemon.sh stop historyserver
+  ./mr-jobhistory-daemon.sh start historyserver
+  #重啟historyserver
+  ```
+* 執行模式:
+  * Interactive mode: 會直接進入grunt shell 互動模式，console 前面匯多帶一個grunt\>
+  ```js
+  pig
+  #進入互動模式
+  ```
+  * Batch mode: 直接執行pig script 檔案內容
+  ```js
+  pig sample.pig
+  ```
 
