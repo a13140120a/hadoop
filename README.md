@@ -1032,12 +1032,17 @@ Sqoop1 VS Sqoop2:
   drop table fs -ls /user/hive/warehouse
   ```
 
-* 資料切割partition &bucket: 
-  * 當資料儲存在資料庫內同一表格時，若資料量非常大，查尋速度會很慢，這時候就可以建立邏輯分割partition
-
-
-
-
+* 資料切割partition &bucket : 
+  * Hive可以使用分區Partition 加速查詢:
+    * 當資料儲存在資料庫內同一表格時，若資料量非常大，查尋速度會很慢，這時候就可以建立邏輯分割partition 
+    * 透過主表格很快查詢到資料
+    * Partition 是以目錄的方式存在於表格中
+    * 可以使用日期做分割(table/2014-10,table/2014-11)
+    * 每次只會存取符合查詢條件的分割，可加速資料查詢
+  * Bucket 可以做資料取樣: 
+    * 建立Bucket 會將資料依鍵值切割
+    * 每個Bucket 包含隨機取樣資料
+    * 可以使用Bucket 去取樣部分資料
 
 
 
