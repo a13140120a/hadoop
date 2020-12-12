@@ -831,10 +831,14 @@ Sqoop1 VS Sqoop2:
     * 當有明確的Schema
     * 當資料適合使用SQL
     * 高容錯姓
+    * 執行速度慢
+    * 使用難度較Pig 易
   * Pig
     * 可以執行複雜的ETE
     * Pig提供較Hive 更多控制
     * 高容錯姓
+    * 執行速度慢
+    * 使用難度較hive 難
   * Impala
     * 有明確的Schema
     * 即時性互動查詢
@@ -1125,3 +1129,48 @@ Sqoop1 VS Sqoop2:
   #把檔案移到sqoop底下的lib目錄
   mv hive-common-0.10.0.jar ~/sqoop-1.4.7.bin__hadoop-2.6.0/lib/
   ```
+  * 簡易分析， 分析三大法人單日交易最高契約金額總和: 
+  ```js
+  SELECT date, sum(value) as sum_val FROM majortrade GROUP ㄖY date ORDER BY sum_val DESC LIMIT 1;
+  ```
+  
+### Pig #
+
+* 由yahoo 發明
+* 類腳本語言(Scripting Like Data Flow Language)
+* 將MapRdduce 工作抽象化: 實際上是轉化成MapRdduce 工作後在cluster 上面執行
+* 功能:
+  * 合併資料
+  * 聚合資料
+  * 流程控制
+  * 客製化載入: 可以自訂義函式
+  
+* 架構:
+  * 使用Client 存取
+    * 可以單獨安裝在client 機器上
+    * 透過pig client 送出 MR工作
+  * 安裝成Central Service
+    * 使用Hue
+    * Talentd Qubole
+  * 不需要Metastore
+* Pig 會跟 Pre-built 的Binaries 會轉換成Jar 檔去submmit 工作，並透過MapReduce 的工作執行 Query。
+* 不會產生Java 原始碼
+* 優點:
+  * 簡潔方便(相較Jave 而言)
+  * 擅長處理非結構化資料:Map, Tuple, Databags
+  * 系統管理員跟開發人員容易上手，加速程式開發(類似shell)
+  * 提供流程控制
+  * 擅長資料ETL
+* 缺點:
+  * 無法即時性分析(使用ImPALA)
+  * 非高效能(使用Impala)
+  * 如需要共用的架構(View, Table)(使用Hive)
+  * 如需要使用資料庫已有的SQL Script(使用Hive)
+  * 若資料有明確的schema(使用hive)
+
+
+
+
+
+
+
