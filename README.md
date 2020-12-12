@@ -1204,4 +1204,6 @@ Sqoop1 VS Sqoop2:
   ```js
   pig sample.pig
   ```
-
+  * [基本指令](http://ningnotebook.blogspot.com/2016/06/pig-stackedit.html)
+  
+  
