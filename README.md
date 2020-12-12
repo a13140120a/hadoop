@@ -986,7 +986,9 @@ Sqoop1 VS Sqoop2:
   * 建立內部資料表:ratings
   ```js
   # tab為資料分隔符號
-  CREATE TABLE ratings(userid INT,itemid INT, rating INT) ROW FORMAT DELIMITED FIELDS TERMINATED BY '\t'
+  CREATE TABLE ratings(userid INT, itemid INT, rating INT) ROW FORMAT DELIMITED FIELDS TERMINATED BY '\t'
+  # ROW FORMAT DELIMITED FIELDS TERMINATED BY '\t' :欄位的分隔符號，CSV預設為','
+  #
   ```
   * 將本地端資料[ratings.csv](https://github.com/a13140120a/hadoop/blob/main/ratings.tsv)讀入ratings表格
   ```js
@@ -999,6 +1001,8 @@ Sqoop1 VS Sqoop2:
   * 建立外部資料表:items
   ```js
   CREATE EXTERNAL TABLE items(itemid INT,category STRING) ROW FORMAT DELIMITED FIELDS TERMINATED BY '\t' LOCATION '/external'
+  # LINES TERMINATED BY: 每個row的換行符號，CSV為'\n'
+  # LOCATION: HDFS檔案存放路徑
   ```
   * 清洗後將資料[items.txt](https://github.com/a13140120a/hadoop/blob/main/items.txt) 從本地端 放置於HDFS
   ```js
@@ -1035,18 +1039,50 @@ Sqoop1 VS Sqoop2:
 * 資料切割partition &bucket : 
   * Hive可以使用分區Partition 加速查詢:
     * 當資料儲存在資料庫內同一表格時，若資料量非常大，查尋速度會很慢，這時候就可以建立邏輯分割partition 
-    * 透過主表格很快查詢到資料
+    * 透過主表格很快查詢到資料 
     * Partition 是以目錄的方式存在於表格中
-    * 可以使用日期做分割(table/2014-10,table/2014-11)
+    * 可以使用日期或鍵值做分割，ex: table/2014-10, table/2014-11
     * 每次只會存取符合查詢條件的分割，可加速資料查詢
+
+    * 建立分區表格及讀取資料[top_ratings.tsv](https://github.com/a13140120a/hadoop/blob/main/top_ratings.tsv), [second_ratings.tsv](https://github.com/a13140120a/hadoop/blob/main/second_ratings.tsv): 
+    ```js
+    CREATE TABLE top_ratings(userid INT, itemid INT) PARTITIONED BY(rating INT) ROW FORMAT DELIMITED FIELDS TERMINATED BY '\t';
+    
+    LOAD DATA LOCAL INPATH 'top_ratings.tsv' overwrite INTO TABLE top_ratings PARTITION(rating=5);
+    
+    LOAD DATA LOCAL INPATH 'second_ratings.tsv' overwrite INTO TABLE top_ratings PARTITION(rating=4);
+    ```
+    * 分區查詢資料: 
+    ```js
+    SELECT * FROM top_ratings WHERE ratings = 5;
+    ```
+    * 可以看到hive 將其區分為兩個partition: 
+    ```js
+    hadoop fs -ls /user/hive/warehouse/top_ratings/
+    ```
   * Bucket 可以做資料取樣: 
     * 建立Bucket 會將資料依鍵值切割
     * 每個Bucket 包含隨機取樣資料
     * 可以使用Bucket 去取樣部分資料
+    * 建立分統表格及讀取資料[top_ratings.tsv](https://github.com/a13140120a/hadoop/blob/main/top_ratings.tsv):  
+    ```js
+    # 先將top_ratings.tsv 改名成 ratings.tsv
+    CREATE TABLE bucket_ratings(userid INT,itemid INT,rating INT) CLUSTERED BY(rating) SORTED BY(rating ASC) INTO 5 BUCKETS ROW FORMAT DELIMITED FIELDS TERMINATED BY '\t';
+    
+    LOAD DATA LOCAL INPATH 'ratings.tsv' overwrite INTO TABLE bucket_ratings;
+    #出現錯誤: FAILED: SemanticException Please load into an intermediate table and use 'insert... select' to allow Hive to enforce bucketing. Load into bucketed tables are disabled for safety reasons. If you .....
+    
+    # 解決(較推薦):到hive-site.xml 裡面修改hive.strict.checks.bucketing 的值為false
+    
+    # 解決(較不推薦): 先建立一個一樣Schema 的普通Table ，把資料load 到普通Table之後再 insert 進去 bucket table
+    CREATE TABLE bucket_common(userid INT,itemid INT,rating INT) ROW FORMAT DELIMITED FIELDS TERMINATED BY '\t' ;
+    LOAD DATA LOCAL INPATH 'ratings.tsv' INTO TABLE bucket_common;
+    # 順序要對到
+    INSERT INTO TABLE bucket_ratings SELECT userid,itemid,rating FROM bucket_common;
 
-
-
-
-
+    
+    #查看
+    SELECT * FROM bucket_ratings LIMIT 10;
+    ```
 
 
