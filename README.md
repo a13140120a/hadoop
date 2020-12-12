@@ -633,7 +633,7 @@ Sqoop1 VS Sqoop2:
     export ACCUMULO_HOME  
     export ZOOKEEPER_HOME(多行註解Ctrl+v然後按下，選取完之後按shift+i輸入要註解的符號(例如#)，然後按esc)  
   * 
-* Sqoop2安裝:
+* Sqoop2安裝(非必要):
   * 下載: https://downloads.apache.org/sqoop/1.99.7/
   * 解壓縮然後移動到home目錄
   * 編輯`~/.bashrc`:
@@ -675,7 +675,7 @@ Sqoop1 VS Sqoop2:
   ```
   * 測試 :
   ```js
-  sqoop list-databases --connect jdbc:mysql://mysql:3306/ --username user --password 000000
+  sqoop list-databases --connect jdbc:mysql://mysql:3306/ --username user --password aaa123
   ```
   * 若出現問題: ERROR manager.SqlManager: Error executing statement: java.sql.SQLException: Access denied for user 'test'@'localhost' (using password: NO)，是因為權限不足。
   ```js
@@ -1022,7 +1022,7 @@ Sqoop1 VS Sqoop2:
   #join
   select * from ratings s join items i on s.itemid=i.itemid limit 30;
   ```
-  * 設定成本地端運行(不用mapreduce)，較快:
+  * 設定成本地端運行(不用mapreduce)，速度較快:
   ```js
   SET hive.exec.mode.local.auto=true;
   ```
@@ -1064,10 +1064,12 @@ Sqoop1 VS Sqoop2:
     * 建立Bucket 會將資料依鍵值切割
     * 每個Bucket 包含隨機取樣資料
     * 可以使用Bucket 去取樣部分資料
-    * 建立分統表格及讀取資料[top_ratings.tsv](https://github.com/a13140120a/hadoop/blob/main/top_ratings.tsv):  
+    * 建立分統表格及讀取資料[ratings.txt](https://github.com/a13140120a/hadoop/blob/main/ratings.txt):  
     ```js
-    # 先將top_ratings.tsv 改名成 ratings.tsv
-    CREATE TABLE bucket_ratings(userid INT,itemid INT,rating INT) CLUSTERED BY(userid) SORTED BY(userid ASC) INTO 5 BUCKETS ROW FORMAT DELIMITED FIELDS TERMINATED BY '\t';
+    #先準備資料
+    cat ratings.txt |tr -s "::" "\t" >ratings.tsv
+    
+    CREATE TABLE bucket_ratings(userid INT,itemid INT,rating INT) CLUSTERED BY(rating) SORTED BY(rating ASC) INTO 5 BUCKETS ROW FORMAT DELIMITED FIELDS TERMINATED BY '\t';
     
     LOAD DATA LOCAL INPATH '/home/test/ratings.tsv' overwrite INTO TABLE bucket_ratings;
     #出現錯誤: FAILED: SemanticException Please load into an intermediate table and use 'insert... select' to allow Hive to enforce bucketing. Load into bucketed tables are disabled for safety reasons. If you .....
@@ -1086,6 +1088,40 @@ Sqoop1 VS Sqoop2:
     * 分桶查詢:
     ```js
     SELECT * FROM bucket_ratings TABLESAMPLE(BUCKET 2 OUT OF 5);
-    # 如果key 的種類少於分桶數量，會自動依照key的種類分桶，例如如果user id 只有4種，最多就只會分四桶
+    # 如果key 的種類少於分桶數量，會自動依照key的種類分桶，例如如果rating 只有4種，最多就只會分四桶，第五桶會沒有東西
     ```
-
+* 使用sqoop 將資料導入Hive:
+  * 建立表格create_finance.sql:
+  ```js
+  CREATE TABLE MajorTrade(
+    id	int	NOT NULL AUTO_INCREMENT,
+    item	varchar(256),
+    volume	int	NOT NULL,
+    value	int	NOT NULL,
+    date	datetime	NOT NULL,
+    PRIMARY KEY (`id`)
+);-- 建立MajorTrade 表格
+  ```
+  ```js
+  #選擇名為test 的db
+  mysql -u user test -p < create_finance.sql
+  ```
+  * 載入txt 檔:
+  ```js
+  mysql -u user test -e "LOAD DATA LOCAL INFILE 'finance.csv' INTO TABLE MajorTrade FIELDS TERMINATED BY ',' LINES TERMINATED BY'\n'(item, volume, value, date)" --local-infile=1
+  ```
+  * 輸入指令([其他指令](https://www.itread01.com/content/1548802119.html)):
+  ```js
+  sqoop import --connect jdbc:mysql://localhost:3306/test -username user --password aaa123 --query "SELECT * FROM MajorTrade where \$CONDITIONS" --hive-table majortrade  --create-hive-table --hive-import --hive-home /user/hive/warehouse -m 2 --target-dir majortrade --split-by "date"
+  # --hive-table: 匯入hive 的table 名稱
+  # --create-hive-table: 沒有就創建
+  # --hive-import: 匯到hive 中
+  # --hive-overwrite: 在匯入表的時候對錶的資料進行覆蓋
+  # --hive-home: 內部資料表預設/user/hive/warehouse
+  # --target-dir: 會在/user/hive/warehouse 裡面自動建立目錄
+  ```
+  * 出現錯誤:20/12/11 23:56:25 ERROR hive.HiveConfig: Could not load org.apache.hadoop.hive.conf.HiveConf. Make sure HIVE_CONF_DIR is set correctly.: 下載[hive-common-0.10.0.jar](https://mvnrepository.com/artifact/org.apache.hive/hive-common/0.10.0)
+  ```js
+  #把檔案移到sqoop底下的lib目錄
+  mv hive-common-0.10.0.jar ~/sqoop-1.4.7.bin__hadoop-2.6.0/lib/
+  ```
