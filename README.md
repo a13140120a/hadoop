@@ -423,11 +423,11 @@ hadoop fs -cat /data/part-00000
      configuration.set("fs.hdfs.impl",
        org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
      FileSystem fs = FileSystem.get(configuration);
-     Path pt = new Path("hdfs://master:9000/data/tibame.txt");  //打開一個tibame.txt的檔案
+     Path pt = new Path("hdfs://master:9000/data/testtest.txt");  //打開一個testtest.txt的檔案
      BufferedWriter br = new BufferedWriter(new OutputStreamWriter(
        fs.create(pt, true)));
      String line;               //透過BufferedWriter 的OutputStreamWriter方法寫入檔案
-     line = "Tibame Hadoop\n";  //寫入內容
+     line = "Hello Hadoop!\n";  //寫入內容
      System.out.println(line);  //寫入一行就印出一行
      br.write(line);
      br.close();               //關檔
@@ -459,7 +459,7 @@ hadoop fs -cat /data/part-00000
         org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
       FileSystem fs = FileSystem.get(configuration);
       FileStatus[] status = fs.listStatus(new Path(
-        "hdfs://master:9000/data/tibame.txt"));
+        "hdfs://master:9000/data/testtest.txt"));
       BufferedReader br = new BufferedReader(new InputStreamReader(
         fs.open(status[0].getPath())));  //讀取第一個檔案的路徑
       String line = br.readLine();  //逐行讀出
