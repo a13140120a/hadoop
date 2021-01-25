@@ -492,7 +492,6 @@ hadoop fs -cat /data/part-00000
     * 為 Mapper 的輸入(spli 輸入 mapper)，一個 Split 對應一個 Mapper，透過 RecordReader 轉成 key/value
   * [Output](https://hadoop.apache.org/docs/stable/api/org/apache/hadoop/mapreduce/lib/output/package-summary.html) 在套件 org.apache.hadoop.mapreduce.lib.output 底下 
     * FileOutputFormat, NullOutputFormat ...etc 寫入
-    * 在
 * Mapper 類別:
    ```js
                //k1, v1:input key/value
