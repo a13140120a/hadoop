@@ -217,7 +217,7 @@ mkdir: Call From master/192.168.1.69 to master:8020 failed on connection excepti
        2. Master 容錯性低: Master 壞掉就會導致單點故障讓所有工作失敗
        3. 資源利用率低: Map 跟 Reduce 之間資源無法共享
        4. 無法資源多個計算框架共存: EX: Spark
-  * 傳統MRC1運作方式:
+  * 傳統MRV1運作方式:
     * Client 送出工作給 JobTracker
     * JobTracker 詢問 Name Node 關於資料位置
     * JobTracker 根據資料(本地性)決定由哪幾個 TaskTracker 處理資料
